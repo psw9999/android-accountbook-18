@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/bottom_menu_history"
+        android:icon="@drawable/ic_property_1_document_list"
+        app:showAsAction="ifRoom"
+        android:title="@string/bottom_navi_history">
+    </item>
+    <item
+        android:id="@+id/bottom_menu_calendar"
+        android:icon="@drawable/ic_property_1_calendar_month"
+        app:showAsAction="ifRoom"
+        android:title="@string/bottom_navi_calendar">
+    </item>
+    <item
+        android:id="@+id/bottom_menu_statistics"
+        android:icon="@drawable/ic_property_1_graph"
+        app:showAsAction="ifRoom"
+        android:title="@string/bottom_navi_statistics">
+    </item>
+    <item
+        android:id="@+id/bottom_menu_configuration"
+        android:icon="@drawable/ic_property_1_settings"
+        app:showAsAction="ifRoom"
+        android:title="@string/bottom_navi_configuration">
+    </item>
+</menu>
