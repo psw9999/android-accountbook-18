@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="bottomNavigationColor" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="colorPrimary">@color/white</item>
+        <item name="backgroundTint">@color/purple</item>
+        <item name="itemIconTint">@drawable/main_menu_selector_color</item>
+        <item name="itemTextColor">@drawable/main_menu_selector_color</item>
+        <item name="labelVisibilityMode">labeled</item>
+    </style>
+</resources>
