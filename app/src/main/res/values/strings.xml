@@ -6,4 +6,15 @@
     <string name="bottom_navi_statistics">통계</string>
     <string name="bottom_navi_configuration">설정</string>
 
+    <string name="input_appbar_title">내역 등록</string>
+    <string name="input_tbtn_income">수입</string>
+    <string name="input_tbtn_expenditure">지출</string>
+    <string name="input_tv_date">일자</string>
+    <string name="input_tv_amount">금액</string>
+    <string name="input_tv_payment">결제 수단</string>
+    <string name="input_tv_classification">분류</string>
+    <string name="input_tv_content">내용</string>
+    <string name="input_btn_register">등록하기</string>
+    <string name="input_edt_hint">입력하세요</string>
+    <string name="input_sp_hint">선택하세요</string>
 </resources>
