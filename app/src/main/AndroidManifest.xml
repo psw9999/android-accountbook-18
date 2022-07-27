@@ -4,6 +4,7 @@
     package="com.psw9999.android_accountbook_18">
 
     <application
+        android:name=".AccountBookApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
