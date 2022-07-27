@@ -1,0 +1,217 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.historyinput.HistoryInputFragment">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/l_ab_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:elevation="0dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/ab_search"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                app:navigationIcon="@drawable/ic_property_1_back"
+                app:title="@string/input_appbar_title"
+                app:titleCentered="true" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/purple"
+            app:layout_constraintTop_toBottomOf="@id/l_ab_search" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_input_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="16dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_input_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="16dp" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/tbtng_type_selector"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:checkedButton="@id/tbtn_income"
+            app:layout_constraintTop_toBottomOf="@id/l_ab_search"
+            app:layout_constraintStart_toEndOf="@id/gl_input_start"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end">
+
+            <Button
+                android:id="@+id/tbtn_income"
+                style="@style/tg_btn_grp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/input_tbtn_income"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/tbtn_expenditure"
+                style="@style/tg_btn_grp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/input_tbtn_expenditure"
+                android:textSize="12sp" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.TextViewWithDivision
+            android:id="@+id/tv_division_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end"
+            app:layout_constraintStart_toEndOf="@id/gl_input_start"
+            app:layout_constraintTop_toBottomOf="@id/tbtng_type_selector"
+            app:setTitle="@string/input_tv_date" />
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.TextViewWithDivision
+            android:id="@+id/tv_division_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end"
+            app:layout_constraintStart_toEndOf="@id/gl_input_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_division_date"
+            app:setTitle="@string/input_tv_amount" />
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.TextViewWithDivision
+            android:id="@+id/tv_division_payment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end"
+            app:layout_constraintStart_toEndOf="@id/gl_input_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_division_amount"
+            app:setTitle="@string/input_tv_payment" />
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.TextViewWithDivision
+            android:id="@+id/tv_division_classification"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end"
+            app:layout_constraintStart_toEndOf="@id/gl_input_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_division_payment"
+            app:setTitle="@string/input_tv_classification" />
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.TextViewWithDivision
+            android:id="@+id/tv_division_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end"
+            app:layout_constraintStart_toEndOf="@id/gl_input_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_division_classification"
+            app:setTitle="@string/input_tv_content" />
+
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="40dp"
+            android:backgroundTint="@color/bg_btn_register"
+            android:enabled="false"
+            android:text="@string/input_btn_register"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end"
+            app:layout_constraintStart_toEndOf="@id/gl_input_start" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:text="@string/input_sp_hint"
+            android:textColor="@color/lightPurple"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_division_date" />
+
+        <EditText
+            android:id="@+id/edt_amount"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginBottom="8dp"
+            android:background="@null"
+            android:hint="@string/input_edt_hint"
+            android:padding="0dp"
+            android:textColorHint="@color/lightPurple"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:inputType="number"
+            android:maxLines="1"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_division_amount"
+            app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_division_amount" />
+
+        <Spinner
+            android:id="@+id/sp_register_payment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_division_payment"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_division_payment" />
+
+        <Spinner
+            android:id="@+id/sp_register_classification"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_division_classification"
+            app:layout_constraintEnd_toStartOf="@id/gl_input_end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_division_classification" />
+
+        <EditText
+            android:id="@+id/edt_register_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginBottom="8dp"
+            android:background="@null"
+            android:hint="@string/input_edt_hint"
+            android:padding="0dp"
+            android:textColorHint="@color/lightPurple"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_division_content"
+            app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_division_content" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

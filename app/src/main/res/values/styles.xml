@@ -7,4 +7,9 @@
         <item name="itemTextColor">@drawable/main_menu_selector_color</item>
         <item name="labelVisibilityMode">labeled</item>
     </style>
+
+    <style name="tg_btn_grp" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/bg_tab_btn</item>
+        <item name="cornerRadius">10dp</item>
+    </style>
 </resources>
