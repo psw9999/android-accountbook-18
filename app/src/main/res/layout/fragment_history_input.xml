@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewmodel"
+            type="com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -146,7 +148,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="100dp"
-            android:text="@string/input_sp_hint"
+            android:text="@{viewmodel.historyDate}"
             android:textColor="@color/lightPurple"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
