@@ -17,4 +17,5 @@
     <string name="input_btn_register">등록하기</string>
     <string name="input_edt_hint">입력하세요</string>
     <string name="input_sp_hint">선택하세요</string>
+    <string name="input_sp_add">추가하기</string>
 </resources>
