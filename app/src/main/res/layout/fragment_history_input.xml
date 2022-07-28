@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewmodel"
+            type="com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,7 +71,7 @@
                 android:textSize="12sp" />
 
             <Button
-                android:id="@+id/tbtn_expenditure"
+                android:id="@+id/tbtn_spend"
                 style="@style/tg_btn_grp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -146,8 +148,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="100dp"
-            android:text="@string/input_sp_hint"
-            android:textColor="@color/lightPurple"
+            android:text="@{viewmodel.historyDate}"
+            android:textColor="@color/purple"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
             app:layout_constraintStart_toStartOf="parent"
@@ -178,17 +180,25 @@
             android:layout_height="0dp"
             android:layout_marginStart="100dp"
             android:layout_marginBottom="8dp"
+            android:background="@null"
+            android:overlapAnchor="false"
+            android:dropDownVerticalOffset="10dp"
+            android:popupBackground="@drawable/bg_input_spinner_dropdown"
             app:layout_constraintBottom_toBottomOf="@id/tv_division_payment"
             app:layout_constraintEnd_toStartOf="@id/gl_input_end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_division_payment" />
 
         <Spinner
-            android:id="@+id/sp_register_classification"
+            android:id="@+id/sp_register_category"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="100dp"
             android:layout_marginBottom="8dp"
+            android:background="@null"
+            android:overlapAnchor="false"
+            android:dropDownVerticalOffset="10dp"
+            android:popupBackground="@drawable/bg_input_spinner_dropdown"
             app:layout_constraintBottom_toBottomOf="@id/tv_division_classification"
             app:layout_constraintEnd_toStartOf="@id/gl_input_end"
             app:layout_constraintStart_toStartOf="parent"
@@ -211,7 +221,6 @@
             app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_division_content" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

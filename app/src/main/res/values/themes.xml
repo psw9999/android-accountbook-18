@@ -18,6 +18,7 @@
         <item name="android:textColorPrimary">@color/purple</item>
         <item name="android:textColor">@color/purple</item>
         <item name="bottomNavigationStyle">@style/bottomNavigationColor</item>
+        <item name="android:datePickerStyle">@style/date_picker</item>
     </style>
 </resources>
 

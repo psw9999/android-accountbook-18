@@ -12,4 +12,8 @@
         <item name="android:backgroundTint">@color/bg_tab_btn</item>
         <item name="cornerRadius">10dp</item>
     </style>
+
+    <style name="date_picker" parent="android:Widget.Material.Light.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
+    </style>
 </resources>
