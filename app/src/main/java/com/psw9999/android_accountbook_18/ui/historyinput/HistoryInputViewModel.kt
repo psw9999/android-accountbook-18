@@ -22,6 +22,9 @@ class HistoryInputViewModel : ViewModel() {
     private val _catergory = MutableStateFlow("")
     val catergory = _catergory
 
+    private val _isSpend = MutableStateFlow(false)
+    val isSpend = _isSpend
+
     fun setHistoryDate(year: Int, month: Int, dayOfMonth: Int) {
         historyDate.value = String.format(dateFormat, year, month + 1, dayOfMonth)
     }
@@ -32,6 +35,10 @@ class HistoryInputViewModel : ViewModel() {
 
     fun setCategory(category : String) {
         _catergory.value = category
+    }
+
+    fun setIsSpend(isSpend : Boolean) {
+        _isSpend.value = isSpend
     }
 
 }

@@ -14,9 +14,11 @@ import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.historyinput.adapter.InputSpinnerAdapter
 import com.psw9999.android_accountbook_18.ui.main.CategoryViewModel
 import com.psw9999.android_accountbook_18.ui.main.PaymentViewModel
+import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.*
 
 @AndroidEntryPoint
 class HistoryInputFragment :
@@ -82,7 +84,35 @@ class HistoryInputFragment :
             }
         }
 
+        binding.tbtngTypeSelector.addOnButtonCheckedListener { group, _, _ ->
+            if(group.checkedButtonId == R.id.tbtn_spend) historyInputViewModel.setIsSpend(true)
+            else historyInputViewModel.setIsSpend(false)
+        }
     }
+
+    // 탭 전환시 기존 입력 항목 초기화
+    private fun clearInputField(isSpend : Boolean) {
+        with(binding) {
+            historyInputViewModel.setHistoryDate(
+                currentDate.get(Calendar.YEAR),
+                currentDate.get(Calendar.MONTH) + 1,
+                currentDate.get(Calendar.DAY_OF_MONTH))
+            historyInputViewModel.setPaymentMethod("")
+            historyInputViewModel.setCategory("")
+            val categorys = mutableListOf<String>().apply {
+                categoryViewModel.category.value.filter { category ->
+                    category.isSpend == isSpend
+                }.forEach {
+                    this.add(it.name)
+                }
+            }
+            categoryAdapter.setSpinnerList(categorys)
+            edtAmount.editableText.clear()
+            edtRegisterContent.editableText.clear()
+        }
+    }
+
+
 
     override fun observe() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -101,8 +131,10 @@ class HistoryInputFragment :
                 launch {
                     categoryViewModel.category.collectLatest {
                         val categorys = mutableListOf<String>().apply {
-                            it.forEach { payment ->
-                                this.add(payment.name)
+                            it.filter { category ->
+                                category.isSpend == historyInputViewModel.isSpend.value
+                            }.forEach {
+                                this.add(it.name)
                             }
                         }
                         categoryAdapter.setSpinnerList(categorys)
@@ -120,8 +152,14 @@ class HistoryInputFragment :
                         categoryAdapter.setSelectedValue(it)
                     }
                 }
+
+                launch {
+                    historyInputViewModel.isSpend.collectLatest {
+                        clearInputField(it)
+                    }
+                }
+
             }
         }
     }
-
 }
