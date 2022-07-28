@@ -1,8 +1,10 @@
 package com.psw9999.android_accountbook_18.ui.historyinput
 
 import android.app.DatePickerDialog
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -18,6 +20,7 @@ import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
 
 @AndroidEntryPoint
@@ -55,10 +58,10 @@ class HistoryInputFragment :
                 position: Int,
                 id: Long
             ) {
-                if (position >= paymentViewModel.payments.value.size) {
+                if (position == paymentAdapter.count-1) {
                     // TODO : 결제수단 추가하기 프래그먼트로 넘어가기
                 } else {
-                    historyInputViewModel.setPaymentMethod(paymentViewModel.payments.value[position].method)
+                    historyInputViewModel.setPaymentMethod(paymentAdapter.getItem(position))
                 }
             }
 
@@ -73,10 +76,10 @@ class HistoryInputFragment :
                 position: Int,
                 id: Long
             ) {
-                if (position >= categoryViewModel.category.value.size) {
+                if (position >= categoryAdapter.count-1) {
                     // TODO : 분류 추가하기 프래그먼트로 넘어가기
                 } else {
-                    historyInputViewModel.setCategory(categoryViewModel.category.value[position].name)
+                    historyInputViewModel.setCategory(categoryAdapter.getItem(position))
                 }
             }
 
@@ -88,6 +91,14 @@ class HistoryInputFragment :
             if(group.checkedButtonId == R.id.tbtn_spend) historyInputViewModel.setIsSpend(true)
             else historyInputViewModel.setIsSpend(false)
         }
+
+        binding.edtAmount.addTextChangedListener {
+            historyInputViewModel.setAmount(it.toString())
+        }
+
+        binding.edtRegisterContent.addTextChangedListener {
+            historyInputViewModel.setContent(it.toString())
+        }
     }
 
     // 탭 전환시 기존 입력 항목 초기화
@@ -95,10 +106,12 @@ class HistoryInputFragment :
         with(binding) {
             historyInputViewModel.setHistoryDate(
                 currentDate.get(Calendar.YEAR),
-                currentDate.get(Calendar.MONTH) + 1,
+                currentDate.get(Calendar.MONTH),
                 currentDate.get(Calendar.DAY_OF_MONTH))
+
             historyInputViewModel.setPaymentMethod("")
             historyInputViewModel.setCategory("")
+
             val categorys = mutableListOf<String>().apply {
                 categoryViewModel.category.value.filter { category ->
                     category.isSpend == isSpend
@@ -106,6 +119,7 @@ class HistoryInputFragment :
                     this.add(it.name)
                 }
             }
+
             categoryAdapter.setSpinnerList(categorys)
             edtAmount.editableText.clear()
             edtRegisterContent.editableText.clear()
@@ -159,6 +173,11 @@ class HistoryInputFragment :
                     }
                 }
 
+                launch {
+                    historyInputViewModel.stateCombine.collectLatest {
+                        historyInputViewModel.setIsRegisterEnabled(it)
+                    }
+                }
             }
         }
     }
