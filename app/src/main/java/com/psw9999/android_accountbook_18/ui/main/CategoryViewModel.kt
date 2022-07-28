@@ -7,6 +7,7 @@ import com.psw9999.android_accountbook_18.data.dto.CategoryDto
 import com.psw9999.android_accountbook_18.data.repository.CategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,9 +18,9 @@ class CategoryViewModel @Inject constructor(
 
     // TODO : DTO -> Entity로 변경하여 적용
     private val _categorys = MutableStateFlow<List<CategoryDto>>(emptyList())
-    val category = _categorys
+    val category : StateFlow<List<CategoryDto>> = _categorys
 
-    fun getAllCategory() {
+    suspend fun getAllCategory() {
         viewModelScope.launch {
             repository.getAllCategorys().let { result ->
                 if (result is Result.Success) {
