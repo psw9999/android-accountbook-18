@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewmodel"
             type="com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputViewModel" />
@@ -106,6 +107,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:visibility="@{viewmodel.isSpend ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toStartOf="@id/gl_input_end"
             app:layout_constraintStart_toEndOf="@id/gl_input_start"
             app:layout_constraintTop_toBottomOf="@id/tv_division_amount"
@@ -137,7 +139,7 @@
             android:layout_height="50dp"
             android:layout_marginBottom="40dp"
             android:backgroundTint="@color/bg_btn_register"
-            android:enabled="false"
+            android:enabled="@{viewmodel.isRegisterEnabled}"
             android:text="@string/input_btn_register"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/gl_input_end"
@@ -174,7 +176,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_division_amount" />
 
-        <Spinner
+        <com.psw9999.android_accountbook_18.ui.common.customview.HistoryInputSpinner
             android:id="@+id/sp_register_payment"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -184,12 +186,13 @@
             android:overlapAnchor="false"
             android:dropDownVerticalOffset="10dp"
             android:popupBackground="@drawable/bg_input_spinner_dropdown"
+            android:visibility="@{viewmodel.isSpend ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/tv_division_payment"
             app:layout_constraintEnd_toStartOf="@id/gl_input_end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_division_payment" />
 
-        <Spinner
+        <com.psw9999.android_accountbook_18.ui.common.customview.HistoryInputSpinner
             android:id="@+id/sp_register_category"
             android:layout_width="0dp"
             android:layout_height="0dp"
