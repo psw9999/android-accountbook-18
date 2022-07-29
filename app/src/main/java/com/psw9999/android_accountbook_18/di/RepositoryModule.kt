@@ -1,11 +1,11 @@
 package com.psw9999.android_accountbook_18.di
 
-import com.psw9999.android_accountbook_18.data.HistoryRepository
-import com.psw9999.android_accountbook_18.data.HistoryRepositoryImpl
-import com.psw9999.android_accountbook_18.data.repository.CategoryRepository
-import com.psw9999.android_accountbook_18.data.repository.CategoryRepositoryImpl
-import com.psw9999.android_accountbook_18.data.repository.PaymentRepository
-import com.psw9999.android_accountbook_18.data.repository.PaymentRepositoryImpl
+import com.psw9999.android_accountbook_18.data.repository.history.HistoryRepository
+import com.psw9999.android_accountbook_18.data.repository.history.HistoryRepositoryImpl
+import com.psw9999.android_accountbook_18.data.repository.category.CategoryRepository
+import com.psw9999.android_accountbook_18.data.repository.category.CategoryRepositoryImpl
+import com.psw9999.android_accountbook_18.data.repository.payment.PaymentRepository
+import com.psw9999.android_accountbook_18.data.repository.payment.PaymentRepositoryImpl
 import com.psw9999.android_accountbook_18.data.source.local.category.CategoryLocalDataSource
 import com.psw9999.android_accountbook_18.data.source.local.history.HistoryLocalDataSource
 import com.psw9999.android_accountbook_18.data.source.local.payment.PaymentLocalDataSource
