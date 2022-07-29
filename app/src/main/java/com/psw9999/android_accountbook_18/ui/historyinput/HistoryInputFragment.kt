@@ -20,16 +20,19 @@ import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.util.*
 
 @AndroidEntryPoint
 class HistoryInputFragment :
     BaseFragment<FragmentHistoryInputBinding>(R.layout.fragment_history_input) {
 
-    private val historyInputViewModel : HistoryInputViewModel by viewModels()
-    private val paymentViewModel : PaymentViewModel by activityViewModels()
-    private val categoryViewModel : CategoryViewModel by activityViewModels()
+    companion object {
+        val spinnerInitValue = Pair(0, "")
+    }
+
+    private val historyInputViewModel: HistoryInputViewModel by viewModels()
+    private val paymentViewModel: PaymentViewModel by activityViewModels()
+    private val categoryViewModel: CategoryViewModel by activityViewModels()
 
     private val paymentAdapter by lazy { InputSpinnerAdapter(activityContext) }
     private val categoryAdapter by lazy { InputSpinnerAdapter(activityContext) }
@@ -41,8 +44,10 @@ class HistoryInputFragment :
         val date = historyInputViewModel.historyDate.value.split("-")
         val datePicker = DatePickerDialog(
             activityContext, { _, year, month, dayOfMonth ->
-                historyInputViewModel.setHistoryDate(year, month, dayOfMonth) },
-            date[0].toInt(), date[1].toInt()-1, date[2].toInt())
+                historyInputViewModel.setHistoryDate(year, month, dayOfMonth)
+            },
+            date[0].toInt(), date[1].toInt() - 1, date[2].toInt()
+        )
 
         binding.tvDate.setOnClickListener {
             datePicker.show()
@@ -51,44 +56,46 @@ class HistoryInputFragment :
         binding.spRegisterPayment.adapter = paymentAdapter
         binding.spRegisterCategory.adapter = categoryAdapter
 
-        binding.spRegisterPayment.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                adapter: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                if (position == paymentAdapter.count-1) {
-                    // TODO : 결제수단 추가하기 프래그먼트로 넘어가기
-                } else {
-                    historyInputViewModel.setPaymentMethod(paymentAdapter.getItem(position))
+        binding.spRegisterPayment.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapter: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    if (position == paymentAdapter.count - 1) {
+                        // TODO : 결제수단 추가하기 프래그먼트로 넘어가기
+                    } else {
+                        historyInputViewModel.setPaymentMethod(paymentAdapter.getItem(position))
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
                 }
             }
 
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-        }
+        binding.spRegisterCategory.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapter: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    if (position >= categoryAdapter.count - 1) {
+                        // TODO : 분류 추가하기 프래그먼트로 넘어가기
+                    } else {
+                        historyInputViewModel.setCategory(categoryAdapter.getItem(position))
+                    }
+                }
 
-        binding.spRegisterCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                adapter: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                if (position >= categoryAdapter.count-1) {
-                    // TODO : 분류 추가하기 프래그먼트로 넘어가기
-                } else {
-                    historyInputViewModel.setCategory(categoryAdapter.getItem(position))
+                override fun onNothingSelected(p0: AdapterView<*>?) {
                 }
             }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-        }
 
         binding.tbtngTypeSelector.addOnButtonCheckedListener { group, _, _ ->
-            if(group.checkedButtonId == R.id.tbtn_spend) historyInputViewModel.setIsSpend(true)
+            if (group.checkedButtonId == R.id.tbtn_spend) historyInputViewModel.setIsSpend(true)
             else historyInputViewModel.setIsSpend(false)
         }
 
@@ -99,43 +106,46 @@ class HistoryInputFragment :
         binding.edtRegisterContent.addTextChangedListener {
             historyInputViewModel.setContent(it.toString())
         }
+
     }
 
     // 탭 전환시 기존 입력 항목 초기화
-    private fun clearInputField(isSpend : Boolean) {
+    private fun clearInputField() {
         with(binding) {
             historyInputViewModel.setHistoryDate(
                 currentDate.get(Calendar.YEAR),
                 currentDate.get(Calendar.MONTH),
-                currentDate.get(Calendar.DAY_OF_MONTH))
+                currentDate.get(Calendar.DAY_OF_MONTH)
+            )
 
-            historyInputViewModel.setPaymentMethod("")
-            historyInputViewModel.setCategory("")
+            historyInputViewModel.setPaymentMethod(spinnerInitValue)
+            historyInputViewModel.setCategory(spinnerInitValue)
 
-            val categorys = mutableListOf<String>().apply {
-                categoryViewModel.category.value.filter { category ->
-                    category.isSpend == isSpend
-                }.forEach {
-                    this.add(it.name)
-                }
-            }
-
-            categoryAdapter.setSpinnerList(categorys)
+            categoryAdapter.setSpinnerList(categoryFilter())
             edtAmount.editableText.clear()
             edtRegisterContent.editableText.clear()
         }
     }
 
-
+    private fun categoryFilter(): MutableList<Pair<Int, String>> {
+        val categorys = mutableListOf<Pair<Int, String>>().apply {
+            categoryViewModel.category.value.filter { category ->
+                category.isSpend == historyInputViewModel.isSpend.value
+            }.forEach {
+                this.add(Pair(it.id, it.name))
+            }
+        }
+        return categorys
+    }
 
     override fun observe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     paymentViewModel.payments.collectLatest {
-                        val payments = mutableListOf<String>().apply {
+                        val payments = mutableListOf<Pair<Int, String>>().apply {
                             it.forEach { payment ->
-                                this.add(payment.method)
+                                this.add(Pair(payment.id, payment.method))
                             }
                         }
                         paymentAdapter.setSpinnerList(payments)
@@ -144,14 +154,7 @@ class HistoryInputFragment :
 
                 launch {
                     categoryViewModel.category.collectLatest {
-                        val categorys = mutableListOf<String>().apply {
-                            it.filter { category ->
-                                category.isSpend == historyInputViewModel.isSpend.value
-                            }.forEach {
-                                this.add(it.name)
-                            }
-                        }
-                        categoryAdapter.setSpinnerList(categorys)
+                        categoryAdapter.setSpinnerList(categoryFilter())
                     }
                 }
 
@@ -169,7 +172,7 @@ class HistoryInputFragment :
 
                 launch {
                     historyInputViewModel.isSpend.collectLatest {
-                        clearInputField(it)
+                        clearInputField()
                     }
                 }
 

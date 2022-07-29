@@ -9,30 +9,32 @@ import androidx.core.content.ContextCompat
 import com.psw9999.android_accountbook_18.R
 import com.psw9999.android_accountbook_18.databinding.ItemInputSpinnerBinding
 import com.psw9999.android_accountbook_18.databinding.ItemInputSpinnerHeadBinding
+import com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputFragment.Companion.spinnerInitValue
 
 class InputSpinnerAdapter(
     private val context: Context
 ) : BaseAdapter()  {
 
-    private var spinnerList : MutableList<String> = mutableListOf(context.getString(R.string.input_sp_add))
-    private var selectedValue : String = ""
+    private val spinnerAddMenu = Pair(0,context.getString(R.string.input_sp_add))
+    private var spinnerList : MutableList<Pair<Int,String>> = mutableListOf(spinnerAddMenu)
+    private var selectedValue : Pair<Int, String> = spinnerInitValue
 
-    fun setSpinnerList(spinnerList : List<String>) {
+    fun setSpinnerList(spinnerList : List<Pair<Int,String>>) {
         this.spinnerList.apply {
             this.clear()
             this.addAll(spinnerList)
-            this.add(context.getString(R.string.input_sp_add))
+            this.add(spinnerAddMenu)
         }
     }
 
-    fun setSelectedValue(selectedValue : String) {
+    fun setSelectedValue(selectedValue : Pair<Int, String>) {
         this.selectedValue = selectedValue
         notifyDataSetChanged()
     }
 
     override fun getCount(): Int = spinnerList.size
 
-    override fun getItem(position: Int): String = spinnerList[position]
+    override fun getItem(position: Int): Pair<Int,String> = spinnerList[position]
 
     override fun getItemId(position: Int): Long = position.toLong()
 
@@ -42,11 +44,11 @@ class InputSpinnerAdapter(
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View {
         val binding =
             ItemInputSpinnerHeadBinding.inflate(LayoutInflater.from(context), viewGroup, false)
-        if (selectedValue.isEmpty()) {
+        if (selectedValue.second.isEmpty()) {
             binding.tvSpinnerHead.text = context.getString(R.string.input_sp_hint)
             binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.lightPurple))
         } else {
-            binding.tvSpinnerHead.text = selectedValue
+            binding.tvSpinnerHead.text = selectedValue.second
             binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.purple))
         }
         return binding.root
@@ -54,7 +56,7 @@ class InputSpinnerAdapter(
 
     override fun getDropDownView(position: Int, convertView: View?, viewGroup: ViewGroup?): View {
         val binding = ItemInputSpinnerBinding.inflate(LayoutInflater.from(context), viewGroup, false)
-        binding.currentValue = spinnerList[position]
+        binding.currentValue = spinnerList[position].second
         return binding.root
     }
 }
