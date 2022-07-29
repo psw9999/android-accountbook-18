@@ -15,14 +15,14 @@
         tools:context=".ui.historyinput.HistoryInputFragment">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/l_ab_search"
+            android:id="@+id/l_ab_history_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:elevation="0dp"
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/ab_search"
+                android:id="@+id/ab_history_input"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 app:navigationIcon="@drawable/ic_property_1_back"
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/purple"
-            app:layout_constraintTop_toBottomOf="@id/l_ab_search" />
+            app:layout_constraintTop_toBottomOf="@id/l_ab_history_input" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_input_start"
@@ -58,7 +58,7 @@
             app:singleSelection="true"
             app:selectionRequired="true"
             app:checkedButton="@id/tbtn_income"
-            app:layout_constraintTop_toBottomOf="@id/l_ab_search"
+            app:layout_constraintTop_toBottomOf="@id/l_ab_history_input"
             app:layout_constraintStart_toEndOf="@id/gl_input_start"
             app:layout_constraintEnd_toStartOf="@id/gl_input_end">
 
