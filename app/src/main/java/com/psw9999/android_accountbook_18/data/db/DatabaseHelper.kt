@@ -16,7 +16,7 @@ class DatabaseHelper private constructor(context: Context) :
         const val CATEGORY_TABLE = "category_table"
         const val PAYMENT_TABLE = "payment_table"
 
-        fun create(context : Context) : DatabaseHelper {
+        fun create(context: Context): DatabaseHelper {
             return DatabaseHelper(context)
         }
     }
@@ -65,23 +65,23 @@ class DatabaseHelper private constructor(context: Context) :
 
     private fun createDefaultValue(db: SQLiteDatabase) {
         val paymentDefault = ContentValues().apply {
-            put(PaymentColumns.id.columnName, 0)
+            put(PaymentColumns.id.columnName, 1)
             put(PaymentColumns.method.columnName, "현금")
         }
         val incomeCategoryDefault = ContentValues().apply {
-            put(CategoryColumns.id.columnName, 0)
+            put(CategoryColumns.id.columnName, 1)
             put(CategoryColumns.is_spend.columnName, 0)
             put(CategoryColumns.title.columnName, "미분류")
             put(CategoryColumns.color.columnName, 0xA566FF)
         }
         val spendCategoryDefault = ContentValues().apply {
-            put(CategoryColumns.id.columnName, 1)
+            put(CategoryColumns.id.columnName, 2)
             put(CategoryColumns.is_spend.columnName, 1)
             put(CategoryColumns.title.columnName, "미분류")
             put(CategoryColumns.color.columnName, 0xA566FF)
         }
-        db.insert(PAYMENT_TABLE,null, paymentDefault)
-        db.insert(CATEGORY_TABLE,null, incomeCategoryDefault)
-        db.insert(CATEGORY_TABLE,null, spendCategoryDefault)
+        db.insert(PAYMENT_TABLE, null, paymentDefault)
+        db.insert(CATEGORY_TABLE, null, incomeCategoryDefault)
+        db.insert(CATEGORY_TABLE, null, spendCategoryDefault)
     }
 }

@@ -7,9 +7,21 @@ interface HistoryDataSource {
 
     suspend fun getMonthHistorys(date: String): Result<List<HistoryDto>>
 
-    suspend fun saveHistory(history: HistoryDto)
+    suspend fun saveHistory(
+        time : String,
+        amount : Int,
+        content : String,
+        paymentId : Int?,
+        categoryId : Int
+    )
 
-    suspend fun updateHistory(history: HistoryDto)
+    suspend fun updateHistory(
+        time : String,
+        amount : Int,
+        content : String,
+        paymentId : Int?,
+        categoryId : Int
+    )
 
     suspend fun deleteHistories(idList: List<Int>)
 

@@ -1,6 +1,7 @@
 package com.psw9999.android_accountbook_18.ui.historyinput
 
 import androidx.lifecycle.ViewModel
+import com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputFragment.Companion.spinnerInitValue
 import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
 import com.psw9999.android_accountbook_18.util.DateUtil.dateFormat
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +19,11 @@ class HistoryInputViewModel : ViewModel() {
             currentDate.get(Calendar.DAY_OF_MONTH)))
     val historyDate = _historyDate
 
-    private val _paymentMethod = MutableStateFlow("")
-    val paymentMethod : StateFlow<String> = _paymentMethod
+    private val _paymentMethod = MutableStateFlow(spinnerInitValue)
+    val paymentMethod : StateFlow<Pair<Int,String>> = _paymentMethod
 
-    private val _catergory = MutableStateFlow("")
-    val catergory : StateFlow<String> = _catergory
+    private val _catergory = MutableStateFlow(spinnerInitValue)
+    val catergory : StateFlow<Pair<Int,String>> = _catergory
 
     private val _amount = MutableStateFlow("")
     val amount : StateFlow<String> = _amount
@@ -43,18 +44,18 @@ class HistoryInputViewModel : ViewModel() {
             isSpend,
             paymentMethod
         ) { historyDate, amount, isSpend, paymentMethod ->
-            historyDate.isNotEmpty() && amount.isNotEmpty() && ((!isSpend) || paymentMethod.isNotEmpty())
+            historyDate.isNotEmpty() && amount.isNotEmpty() && ((!isSpend) || paymentMethod.second.isNotEmpty())
         }
 
     fun setHistoryDate(year: Int, month: Int, dayOfMonth: Int) {
         historyDate.value = String.format(dateFormat, year, month + 1, dayOfMonth)
     }
 
-    fun setPaymentMethod(method : String) {
+    fun setPaymentMethod(method : Pair<Int, String>) {
         _paymentMethod.value = method
     }
 
-    fun setCategory(category : String) {
+    fun setCategory(category : Pair<Int, String>) {
         _catergory.value = category
     }
 
