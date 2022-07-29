@@ -15,6 +15,7 @@ import com.psw9999.android_accountbook_18.databinding.FragmentHistoryInputBindin
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.historyinput.adapter.InputSpinnerAdapter
 import com.psw9999.android_accountbook_18.ui.main.CategoryViewModel
+import com.psw9999.android_accountbook_18.ui.main.HistoryViewModel
 import com.psw9999.android_accountbook_18.ui.main.PaymentViewModel
 import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +34,7 @@ class HistoryInputFragment :
     private val historyInputViewModel: HistoryInputViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by activityViewModels()
     private val categoryViewModel: CategoryViewModel by activityViewModels()
+    private val historyViewModel : HistoryViewModel by activityViewModels()
 
     private val paymentAdapter by lazy { InputSpinnerAdapter(activityContext) }
     private val categoryAdapter by lazy { InputSpinnerAdapter(activityContext) }
@@ -105,6 +107,20 @@ class HistoryInputFragment :
 
         binding.edtRegisterContent.addTextChangedListener {
             historyInputViewModel.setContent(it.toString())
+        }
+
+        binding.btnRegister.setOnClickListener {
+            with(historyInputViewModel) {
+                historyViewModel.saveHistory(
+                    time = historyDate.value,
+                    amount = amount.value.toInt(),
+                    content = content.value,
+                    paymentId = if (!isSpend.value) null
+                    else paymentMethod.value.first,
+                    categoryId = if (catergory.value.first == 0) 1
+                    else catergory.value.first
+                )
+            }
         }
 
     }
