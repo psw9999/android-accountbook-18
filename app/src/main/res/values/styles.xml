@@ -16,4 +16,16 @@
     <style name="date_picker" parent="android:Widget.Material.Light.DatePicker">
         <item name="android:datePickerMode">spinner</item>
     </style>
+
+    <style name="history_tg_btn_grp" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
+        <item name="android:backgroundTint">@color/bg_tab_btn</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:colorPrimary">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="iconPadding">5dp</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconTint">@null</item>
+    </style>
+
 </resources>
