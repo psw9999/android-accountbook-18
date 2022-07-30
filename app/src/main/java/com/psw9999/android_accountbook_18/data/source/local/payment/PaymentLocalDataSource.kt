@@ -1,10 +1,12 @@
 package com.psw9999.android_accountbook_18.data.source.local.payment
 
+import android.content.ContentValues
 import com.psw9999.android_accountbook_18.data.db.DatabaseHelper
 import com.psw9999.android_accountbook_18.data.dto.PaymentDto
 import com.psw9999.android_accountbook_18.data.Result
 import com.psw9999.android_accountbook_18.data.Result.Success
 import com.psw9999.android_accountbook_18.data.Result.Error
+import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.PAYMENT_TABLE
 import com.psw9999.android_accountbook_18.data.db.PaymentColumns
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -19,23 +21,29 @@ class PaymentLocalDataSource @Inject constructor(
     override suspend fun getAllPayments(): Result<List<PaymentDto>> = withContext(ioDispatcher) {
         val rd = dataBaseHelper.readableDatabase
         val paymentList = mutableListOf<PaymentDto>()
+        val cursor = rd.rawQuery("SELECT * FROM $PAYMENT_TABLE", null)
         return@withContext try {
-            val cursor = rd.rawQuery("SELECT * FROM ${DatabaseHelper.PAYMENT_TABLE}", null)
             while (cursor.moveToNext()) {
                 val id = cursor.getInt(PaymentColumns.id.ordinal)
                 val payment = cursor.getString(PaymentColumns.method.ordinal)
                 paymentList.add(PaymentDto(id, payment))
             }
-            rd.close()
+            cursor.close()
             Success(paymentList)
         } catch (e: Exception) {
-            rd.close()
+            cursor.close()
             Error(e)
         }
     }
 
     override suspend fun savePayment(title: String) {
-        TODO("Not yet implemented")
+        withContext(ioDispatcher) {
+            val wd = dataBaseHelper.writableDatabase
+            val paymentValues = ContentValues().apply {
+                put(PaymentColumns.method.columnName, title)
+            }
+            wd.insert(PAYMENT_TABLE, null, paymentValues)
+        }
     }
 
     override suspend fun updatePayment(title: String) {
