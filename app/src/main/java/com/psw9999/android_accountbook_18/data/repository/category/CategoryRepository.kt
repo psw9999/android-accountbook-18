@@ -7,4 +7,8 @@ interface CategoryRepository {
 
     suspend fun getAllCategorys() : Result<List<CategoryDto>>
 
+    suspend fun saveCategory(isSpend: Boolean, title: String, color: Int)
+
+    suspend fun updateCategory(isSpend: Boolean, title: String, color: Int)
+
 }

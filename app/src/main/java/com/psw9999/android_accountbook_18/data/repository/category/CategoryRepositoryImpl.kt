@@ -15,4 +15,12 @@ class CategoryRepositoryImpl @Inject constructor(
     override suspend fun getAllCategorys(): Result<List<CategoryDto>>
         = categoryDataSource.getAllCategorys()
 
+    override suspend fun saveCategory(isSpend: Boolean, title: String, color: Int) {
+        categoryDataSource.saveCategorys(isSpend, title, color)
+    }
+
+    override suspend fun updateCategory(isSpend: Boolean, title: String, color: Int) {
+        TODO("Not yet implemented")
+    }
+    
 }

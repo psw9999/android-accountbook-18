@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psw9999.android_accountbook_18.data.Result
 import com.psw9999.android_accountbook_18.data.dto.CategoryDto
-import com.psw9999.android_accountbook_18.data.repository.CategoryRepository
+import com.psw9999.android_accountbook_18.data.repository.category.CategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +30,12 @@ class CategoryViewModel @Inject constructor(
                     _categorys.value = emptyList()
                 }
             }
+        }
+    }
+
+    suspend fun saveCategory(isSpend : Boolean, title : String, color : Int) {
+        viewModelScope.launch {
+            repository.saveCategory(isSpend, title, color)
         }
     }
 
