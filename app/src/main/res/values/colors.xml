@@ -8,4 +8,53 @@
     <color name="off_white">#F7F6F3</color>
     <color name="white">#FFFFFF</color>
     <color name="white_50">#80FFFFFF</color>
+
+    <color name="income_category_1">#9BD182</color>
+    <color name="income_category_2">#A3CB7A</color>
+    <color name="income_category_3">#B5CC7A</color>
+    <color name="income_category_4">#CCD67A</color>
+    <color name="income_category_5">#EAE07C</color>
+    <color name="income_category_6">#EDCF65</color>
+    <color name="income_category_7">#EBC374</color>
+    <color name="income_category_8">#E1AD60</color>
+    <color name="income_category_9">#E29C4D</color>
+    <color name="income_category_10">#E39145</color>
+
+    <array name="spend_category_array">
+        <item name="spend_category_1">#4A6CC3</item>
+        <item name="spend_category_2">#2E86C7</item>
+        <item name="spend_category_3">#4CA1D3</item>
+        <item name="spend_category_4">#48C2E9</item>
+        <item name="spend_category_5">#6ED5EB</item>
+        <item name="spend_category_6">#9FE7C8</item>
+        <item name="spend_category_7">#94D3CC</item>
+        <item name="spend_category_8">#4CB8B8</item>
+        <item name="spend_category_9">#40B98D</item>
+        <item name="spend_category_10">#2FA488</item>
+        <item name="spend_category_11">#625EBA</item>
+        <item name="spend_category_12">#817DCE</item>
+        <item name="spend_category_13">#9B7DCE</item>
+        <item name="spend_category_14">#B391EB</item>
+        <item name="spend_category_15">#D092E2</item>
+        <item name="spend_category_16">#F1B4EF</item>
+        <item name="spend_category_17">#F4AEE1</item>
+        <item name="spend_category_18">#F396B8</item>
+        <item name="spend_category_19">#DC5D7B</item>
+        <item name="spend_category_20">#CB588F</item>
+    </array>
+
+    <array name="income_category_array">
+        <item name="income_category_1">#9BD182</item>
+        <item name="income_category_2">#A3CB7A</item>
+        <item name="income_category_3">#B5CC7A</item>
+        <item name="income_category_4">#CCD67A</item>
+        <item name="income_category_5">#EAE07C</item>
+        <item name="income_category_6">#EDCF65</item>
+        <item name="income_category_7">#EBC374</item>
+        <item name="income_category_8">#E1AD60</item>
+        <item name="income_category_9">#E29C4D</item>
+        <item name="income_category_10">#E39145</item>
+    </array>
+
+
 </resources>
