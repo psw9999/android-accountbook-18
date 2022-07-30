@@ -5,6 +5,10 @@ import com.psw9999.android_accountbook_18.data.Result
 
 interface PaymentRepository {
 
-    suspend fun getAllPayments() : Result<List<PaymentDto>>
+    suspend fun getAllPayments(): Result<List<PaymentDto>>
+
+    suspend fun savePayment(title: String)
+
+    suspend fun updatePayment(title: String)
 
 }
