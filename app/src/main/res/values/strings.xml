@@ -26,4 +26,7 @@
     <string name="spend_category_appbar_title">지출 카테고리 추가</string>
     <string name="income_category_appbar_title">수입 카테고리 추가</string>
 
+    <string name="history_income">수입</string>
+    <string name="history_spend">지출</string>
+
 </resources>
