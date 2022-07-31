@@ -1,77 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="58dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/tv_history_category"
-        style="@style/category_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="식비" />
+    <data>
 
-    <TextView
-        android:id="@+id/tv_history_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="9dp"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/tv_history_category"
-        app:layout_constraintTop_toBottomOf="@+id/tv_history_category"
-        tools:text="온라인 세미나 신청" />
+        <import type="android.view.View"/>
+        <variable
+            name="historyContent"
+            type="com.psw9999.android_accountbook_18.data.model.HistoryItem" />
+    </data>
 
-    <TextView
-        android:id="@+id/tv_history_payment_method"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_history_category"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_history_category"
-        tools:ignore="SmallSp"
-        tools:text="현대카드" />
-
-    <TextView
-        android:id="@+id/tv_history_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/tv_history_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_history_content"
-        tools:text="-9,500원" />
-
-    <View
-        android:id="@+id/history_body_not_last_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/purple_40"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="wrap_content">
 
-    <View
-        android:id="@+id/history_body_last_view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/lightPurple"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/tv_history_category"
+            style="@style/category_tv"
+            android:layout_width="56dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@{historyContent.color}"
+            android:gravity="center"
+            android:text="@{historyContent.category}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="식비" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/tv_history_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@{historyContent.content}"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_history_category"
+            app:layout_constraintTop_toBottomOf="@+id/tv_history_category"
+            tools:text="온라인 세미나 신청" />
+
+        <TextView
+            android:id="@+id/tv_history_payment_method"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@{historyContent.payment}"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_history_category"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_history_category"
+            tools:ignore="SmallSp"
+            tools:text="현대카드" />
+
+        <TextView
+            android:id="@+id/tv_history_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@{historyContent.spend ? @string/history_spend_amount(historyContent.amount) : @string/history_income_amount(historyContent.amount)}"
+            android:textColor="@{historyContent.spend ? @color/red : @color/income}"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/tv_history_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_history_content"
+            tools:text="-9,500원" />
+
+        <View
+            android:id="@+id/history_body_not_last_view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/purple_40"
+            android:visibility="@{historyContent.last ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/history_body_last_view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightPurple"
+            android:visibility="@{historyContent.last ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
