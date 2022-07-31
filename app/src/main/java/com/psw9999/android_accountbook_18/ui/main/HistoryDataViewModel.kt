@@ -17,7 +17,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class HistoryViewModel @Inject constructor(
+class HistoryDataViewModel @Inject constructor(
     private val repository: HistoryRepository
 ) : ViewModel() {
 
