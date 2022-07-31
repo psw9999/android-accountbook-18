@@ -9,7 +9,7 @@ import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.HISTO
 import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.PAYMENT_TABLE
 import com.psw9999.android_accountbook_18.data.db.HistoryColumns
 import com.psw9999.android_accountbook_18.data.db.PaymentColumns
-import com.psw9999.android_accountbook_18.data.vo.HistoryVo
+import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import com.psw9999.android_accountbook_18.util.DateUtil.dateFormat
 import com.psw9999.android_accountbook_18.util.toBoolean
 import kotlinx.coroutines.CoroutineDispatcher
@@ -41,7 +41,7 @@ class HistoryLocalDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getMonthHistorys(year: Int, month: Int): Result<List<HistoryVo>> =
+    override suspend fun getMonthHistorys(year: Int, month: Int): Result<List<HistoryItem>> =
         withContext(ioDispatcher) {
             val rd = dataBaseHelper.readableDatabase
             val cursor = rd.rawQuery(
@@ -57,11 +57,11 @@ class HistoryLocalDataSource @Inject constructor(
                         "ORDER BY ${HistoryColumns.time.columnName} desc", null
             )
             return@withContext try {
-                val historyList = mutableListOf<HistoryVo>()
+                val historyList = mutableListOf<HistoryItem>()
                 while (cursor.moveToNext()) {
                     with(cursor) {
                         historyList.add(
-                            HistoryVo(
+                            HistoryItem(
                                 getInt(getColumnIndexOrThrow(HistoryColumns.id.columnName)),
                                 getString(getColumnIndexOrThrow(HistoryColumns.time.columnName)),
                                 getInt(getColumnIndexOrThrow(HistoryColumns.amount.columnName)),

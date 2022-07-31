@@ -2,7 +2,7 @@ package com.psw9999.android_accountbook_18.data.repository.history
 
 import com.psw9999.android_accountbook_18.data.Result
 import com.psw9999.android_accountbook_18.data.source.local.history.HistoryDataSource
-import com.psw9999.android_accountbook_18.data.vo.HistoryVo
+import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
@@ -11,9 +11,8 @@ class HistoryRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : HistoryRepository {
 
-    override suspend fun getMonthHistorys(year: Int, month: Int): Result<List<HistoryVo>> =
+    override suspend fun getMonthHistorys(year: Int, month: Int): Result<List<HistoryItem>> =
         historyDataSource.getMonthHistorys(year, month)
-
 
     override suspend fun saveHistory(
         time: String,
