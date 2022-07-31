@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.psw9999.android_accountbook_18.ui.main.HistoryViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,7 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:setDate="2022년 7월" />
+            app:setDate="@{viewModel.selectedDate}"
+            app:onPreBtnClick="@{()->viewModel.setPreviousMonth()}"
+            app:onNextBtnClick="@{()->viewModel.setNextMonth()}"/>
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/tbtng_type_selector"
