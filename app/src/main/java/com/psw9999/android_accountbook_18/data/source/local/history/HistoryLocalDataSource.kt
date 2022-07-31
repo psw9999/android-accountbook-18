@@ -1,18 +1,19 @@
 package com.psw9999.android_accountbook_18.data.source.local.history
 
 import android.content.ContentValues
-import android.util.Log
-import com.psw9999.android_accountbook_18.data.dto.HistoryDto
 import com.psw9999.android_accountbook_18.data.Result
-import com.psw9999.android_accountbook_18.data.Result.Success
-import com.psw9999.android_accountbook_18.data.Result.Error
+import com.psw9999.android_accountbook_18.data.db.CategoryColumns
 import com.psw9999.android_accountbook_18.data.db.DatabaseHelper
+import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.CATEGORY_TABLE
 import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.HISTORY_TABLE
+import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.PAYMENT_TABLE
 import com.psw9999.android_accountbook_18.data.db.HistoryColumns
+import com.psw9999.android_accountbook_18.data.db.PaymentColumns
+import com.psw9999.android_accountbook_18.data.vo.HistoryVo
+import com.psw9999.android_accountbook_18.util.DateUtil.dateFormat
+import com.psw9999.android_accountbook_18.util.toBoolean
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import javax.inject.Inject
 
 class HistoryLocalDataSource @Inject constructor(
@@ -40,9 +41,49 @@ class HistoryLocalDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getMonthHistorys(date : String): Result<List<HistoryDto>> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getMonthHistorys(year: Int, month: Int): Result<List<HistoryVo>> =
+        withContext(ioDispatcher) {
+            val rd = dataBaseHelper.readableDatabase
+            val cursor = rd.rawQuery(
+                "SELECT $HISTORY_TABLE.${HistoryColumns.id.columnName}, ${HistoryColumns.time.columnName}, ${HistoryColumns.amount.columnName}, " +
+                        "${HistoryColumns.content.columnName}, ${HistoryColumns.category_id.columnName}, ${HistoryColumns.payment_id.columnName}, " +
+                        "${PaymentColumns.method.columnName}, ${CategoryColumns.is_spend.columnName}, ${CategoryColumns.title.columnName}, " +
+                        "${CategoryColumns.color.columnName} " +
+                        "FROM $HISTORY_TABLE " +
+                        "LEFT JOIN $CATEGORY_TABLE ON $HISTORY_TABLE.category_id = $CATEGORY_TABLE.id " +
+                        "LEFT JOIN $PAYMENT_TABLE ON $HISTORY_TABLE.payment_id = $PAYMENT_TABLE.id " +
+                        "WHERE ${HistoryColumns.time.columnName} BETWEEN \"${String.format(dateFormat,year,month,1)}\" "+
+                        "AND \"${String.format(dateFormat, year, month, 31)}\" " +
+                        "ORDER BY ${HistoryColumns.time.columnName} desc", null
+            )
+            return@withContext try {
+                val historyList = mutableListOf<HistoryVo>()
+                while (cursor.moveToNext()) {
+                    with(cursor) {
+                        historyList.add(
+                            HistoryVo(
+                                getInt(getColumnIndexOrThrow(HistoryColumns.id.columnName)),
+                                getString(getColumnIndexOrThrow(HistoryColumns.time.columnName)),
+                                getInt(getColumnIndexOrThrow(HistoryColumns.amount.columnName)),
+                                getString(getColumnIndexOrThrow(HistoryColumns.content.columnName)),
+                                getString(getColumnIndexOrThrow(PaymentColumns.method.columnName)),
+                                getInt(getColumnIndexOrThrow(CategoryColumns.is_spend.columnName)).toBoolean(),
+                                getString(getColumnIndexOrThrow(CategoryColumns.title.columnName)),
+                                getInt(getColumnIndexOrThrow(CategoryColumns.color.columnName))
+                            )
+                        )
+                    }
+                }
+                Result.Success(historyList)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Result.Error(e)
+            } finally {
+                if (cursor != null && !cursor.isClosed) {
+                    cursor.close()
+                }
+            }
+        }
 
     override suspend fun updateHistory(
         time: String,
