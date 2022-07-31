@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.psw9999.android_accountbook_18.R
+import com.psw9999.android_accountbook_18.data.model.HistoryListItem
 import com.psw9999.android_accountbook_18.databinding.FragmentHistoryBinding
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.history.adapter.HistoryListAdapter
@@ -27,7 +28,8 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 historyViewModel.historys.collectLatest {
-                    historyListAdapter.submitList(it)
+                    if (it.isEmpty()) historyListAdapter.submitList(listOf(HistoryListItem.HistoryEmpty))
+                    else historyListAdapter.submitList(it)
                 }
             }
         }
