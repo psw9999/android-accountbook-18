@@ -27,6 +27,12 @@ class HistoryViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow<LocalDate>(currentDate)
     val selectedDate : StateFlow<LocalDate> = _selectedDate
 
+    private val _incomeSum = MutableStateFlow<Int>(0)
+    val incomeSum : StateFlow<Int> = _incomeSum
+
+    private val _spendSum = MutableStateFlow<Int>(0)
+    val spendSum : StateFlow<Int> = _spendSum
+
     suspend fun getMonthHistorys(year: Int, month: Int) {
         viewModelScope.launch {
             repository.getMonthHistorys(year, month).let { result ->
@@ -61,6 +67,8 @@ class HistoryViewModel @Inject constructor(
 
     private fun mapperHistoryListItem(historyItem : List<HistoryItem>) : ArrayList<HistoryListItem> {
         var befHeader = Pair(0, "")
+        var incomeSum = 0
+        var spendSum = 0
         val result = arrayListOf<HistoryListItem>()
 
         for ((index, history) in historyItem.withIndex()) {
@@ -73,12 +81,17 @@ class HistoryViewModel @Inject constructor(
                 if (history.isSpend) (result[befHeader.first] as HistoryListItem.HistoryHeader).spend += history.amount
                 else (result[befHeader.first] as HistoryListItem.HistoryHeader).income += history.amount
             }
+
             if (index == (historyItem.size-1) || history.time != historyItem[index+1].time) {
                 history.isLast = true
             }
 
+            if (history.isSpend) spendSum += history.amount
+            else incomeSum += history.amount
             result.add(HistoryListItem.HistoryContent(history))
         }
+        _spendSum.value = spendSum
+        _incomeSum.value = incomeSum
         return result
     }
 
