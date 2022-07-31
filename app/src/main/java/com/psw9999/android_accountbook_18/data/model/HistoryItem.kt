@@ -1,6 +1,6 @@
-package com.psw9999.android_accountbook_18.data.vo
+package com.psw9999.android_accountbook_18.data.model
 
-data class HistoryVo(
+data class HistoryItem(
     val id: Int,
     val time: String,
     val amount: Int,
@@ -8,5 +8,6 @@ data class HistoryVo(
     val payment : String?,
     val isSpend : Boolean,
     val category: String,
-    val color: Int
+    val color: Int,
+    var isLast : Boolean = false
 )
