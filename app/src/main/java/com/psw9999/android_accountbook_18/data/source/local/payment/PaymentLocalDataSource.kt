@@ -24,9 +24,12 @@ class PaymentLocalDataSource @Inject constructor(
         val cursor = rd.rawQuery("SELECT * FROM $PAYMENT_TABLE", null)
         return@withContext try {
             while (cursor.moveToNext()) {
-                val id = cursor.getInt(PaymentColumns.id.ordinal)
-                val payment = cursor.getString(PaymentColumns.method.ordinal)
-                paymentList.add(PaymentDto(id, payment))
+                paymentList.add(
+                    PaymentDto(
+                        cursor.getInt(PaymentColumns.id.ordinal),
+                        cursor.getString(PaymentColumns.method.ordinal)
+                    )
+                )
             }
             cursor.close()
             Success(paymentList)

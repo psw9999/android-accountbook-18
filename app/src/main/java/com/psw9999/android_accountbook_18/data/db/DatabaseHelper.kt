@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 
 class DatabaseHelper private constructor(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -35,7 +34,7 @@ class DatabaseHelper private constructor(context: Context) :
         val createHistoryQuery = "CREATE TABLE $HISTORY_TABLE (" +
                 "${HistoryColumns.id.columnName} INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "${HistoryColumns.amount.columnName} INTEGER NOT NULL, " +
-                "${HistoryColumns.time.columnName} TEXT NOT NULL, " +
+                "${HistoryColumns.time.columnName} DATE NOT NULL, " +
                 "${HistoryColumns.content.columnName} TEXT, " +
                 "${HistoryColumns.category_id.columnName} INTEGER, " +
                 "${HistoryColumns.payment_id.columnName} INTEGER, " +

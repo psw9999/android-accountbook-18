@@ -1,17 +1,14 @@
 package com.psw9999.android_accountbook_18.data.source.local.category
 
 import android.content.ContentValues
-import android.util.Log
 import com.psw9999.android_accountbook_18.data.Result
 import com.psw9999.android_accountbook_18.data.db.CategoryColumns
 import com.psw9999.android_accountbook_18.data.db.DatabaseHelper
 import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.CATEGORY_TABLE
-import com.psw9999.android_accountbook_18.data.db.PaymentColumns
 import com.psw9999.android_accountbook_18.data.dto.CategoryDto
 import com.psw9999.android_accountbook_18.util.toInt
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import javax.inject.Inject
 
 class CategoryLocalDataSource @Inject constructor(
@@ -25,11 +22,14 @@ class CategoryLocalDataSource @Inject constructor(
         val cursor = rd.rawQuery("SELECT * FROM $CATEGORY_TABLE", null)
         return@withContext try {
             while (cursor.moveToNext()) {
-                val id = cursor.getInt(CategoryColumns.id.ordinal)
-                val isSpend = cursor.getInt(CategoryColumns.is_spend.ordinal) == 1
-                val name = cursor.getString(CategoryColumns.title.ordinal)
-                val color = cursor.getInt(CategoryColumns.color.ordinal)
-                categoryList.add(CategoryDto(id, isSpend, name, color))
+                categoryList.add(
+                    CategoryDto(
+                        cursor.getInt(CategoryColumns.id.ordinal),
+                        cursor.getInt(CategoryColumns.is_spend.ordinal) == 1,
+                        cursor.getString(CategoryColumns.title.ordinal),
+                        color = cursor.getInt(CategoryColumns.color.ordinal)
+                    )
+                )
             }
             cursor.close()
             Result.Success(categoryList)
