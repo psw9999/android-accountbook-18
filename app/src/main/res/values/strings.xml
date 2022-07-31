@@ -28,5 +28,7 @@
 
     <string name="history_income">수입</string>
     <string name="history_spend">지출</string>
-
+    <string name="history_amount_sum">%,d</string>
+    <string name="history_income_amount">%,d원</string>
+    <string name="history_spend_amount">-%,d원</string>
 </resources>
