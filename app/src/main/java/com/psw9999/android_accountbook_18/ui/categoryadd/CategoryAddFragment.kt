@@ -41,6 +41,11 @@ class CategoryAddFragment :
         categoryColorList =
             if (categoryAddViewModel.isSpend.value!!) activityContext.resources.getIntArray(R.array.spend_category_array).toList()
             else activityContext.resources.getIntArray(R.array.income_category_array).toList()
+
+        categoryColorAdapter.setOnColorClickListener { selectedColor ->
+            categoryAddViewModel.setSelectedColorIndex(selectedColor)
+        }
+
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
