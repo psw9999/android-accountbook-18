@@ -71,13 +71,13 @@ class DatabaseHelper private constructor(context: Context) :
             put(CategoryColumns.id.columnName, 1)
             put(CategoryColumns.is_spend.columnName, 0)
             put(CategoryColumns.title.columnName, "미분류")
-            put(CategoryColumns.color.columnName, 0xA566FF)
+            put(CategoryColumns.color.columnName, -6565502)
         }
         val spendCategoryDefault = ContentValues().apply {
             put(CategoryColumns.id.columnName, 2)
             put(CategoryColumns.is_spend.columnName, 1)
             put(CategoryColumns.title.columnName, "미분류")
-            put(CategoryColumns.color.columnName, 0xA566FF)
+            put(CategoryColumns.color.columnName, -11899709)
         }
         db.insert(PAYMENT_TABLE, null, paymentDefault)
         db.insert(CATEGORY_TABLE, null, incomeCategoryDefault)

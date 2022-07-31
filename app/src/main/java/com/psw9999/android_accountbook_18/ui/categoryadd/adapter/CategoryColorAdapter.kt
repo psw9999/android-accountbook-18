@@ -14,6 +14,12 @@ class CategoryColorAdapter(
     private var categoryColorList = listOf<Int>()
     private var selectedColorIndex = 0
 
+    private var onColorClickListener : ((Int)->Unit)? = null
+
+    fun setOnColorClickListener(listener: ((Int)->Unit)) {
+        this.onColorClickListener = listener
+    }
+
     fun setCategoryColorList(categoryColorList: List<Int>) {
         this.categoryColorList = categoryColorList
     }
@@ -21,6 +27,7 @@ class CategoryColorAdapter(
     fun setSelectedColor(selectedColor: Int) {
         if(this.selectedColorIndex != selectedColor) {
             this.selectedColorIndex = selectedColor
+            onColorClickListener?.invoke(selectedColor)
             notifyDataSetChanged()
         }
     }
