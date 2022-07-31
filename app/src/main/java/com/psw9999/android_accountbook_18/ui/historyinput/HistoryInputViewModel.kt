@@ -7,16 +7,15 @@ import com.psw9999.android_accountbook_18.util.DateUtil.dateFormat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import java.util.*
 
 class HistoryInputViewModel : ViewModel() {
 
     private val _historyDate = MutableStateFlow(
         String.format(
             dateFormat,
-            currentDate.get(Calendar.YEAR),
-            currentDate.get(Calendar.MONTH) + 1,
-            currentDate.get(Calendar.DAY_OF_MONTH)))
+            currentDate.year,
+            currentDate.monthValue,
+            currentDate.dayOfMonth))
     val historyDate = _historyDate
 
     private val _paymentMethod = MutableStateFlow(spinnerInitValue)
@@ -48,7 +47,7 @@ class HistoryInputViewModel : ViewModel() {
         }
 
     fun setHistoryDate(year: Int, month: Int, dayOfMonth: Int) {
-        historyDate.value = String.format(dateFormat, year, month + 1, dayOfMonth)
+        historyDate.value = String.format(dateFormat, year, month, dayOfMonth)
     }
 
     fun setPaymentMethod(method : Pair<Int, String>) {
