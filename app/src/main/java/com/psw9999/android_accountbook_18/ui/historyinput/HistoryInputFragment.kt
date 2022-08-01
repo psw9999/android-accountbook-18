@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.psw9999.android_accountbook_18.R
+import com.psw9999.android_accountbook_18.data.dto.HistoryDto
 import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import com.psw9999.android_accountbook_18.databinding.FragmentHistoryInputBinding
 import com.psw9999.android_accountbook_18.ui.categoryadd.CategoryAddFragment
@@ -23,6 +24,7 @@ import com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel
 import com.psw9999.android_accountbook_18.ui.main.PaymentViewModel
 import com.psw9999.android_accountbook_18.ui.paymentadd.PaymentAddFragment
 import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
+import com.psw9999.android_accountbook_18.util.toInt
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -58,6 +60,7 @@ class HistoryInputFragment :
     private fun setBefHistoryValue(historyItem: HistoryItem) {
         with(historyInputViewModel) {
             setIsRevised(true)
+            setHistoryId(historyItem.id)
             setHistoryDate(historyItem.time)
             setIsSpend(historyItem.isSpend)
             setAmount(historyItem.amount.toString())
@@ -69,6 +72,7 @@ class HistoryInputFragment :
 
     override fun initViews() {
         binding.viewmodel = historyInputViewModel
+        historyDataViewModel
         // 화면 config 대응
         val date = historyInputViewModel.historyDate.value.split("-")
         val datePicker = DatePickerDialog(
@@ -150,24 +154,63 @@ class HistoryInputFragment :
         }
 
         binding.btnRegister.setOnClickListener {
-            CoroutineScope(Dispatchers.Main).launch {
-                with(historyInputViewModel) {
-                    historyDataViewModel.saveHistory(
-                        time = historyDate.value,
-                        amount = amount.value.toInt(),
-                        content = content.value,
-                        paymentId = if (!isSpend.value) null
-                        else paymentMethod.value.first,
-                        categoryId = if (catergory.value.first == 0) 1
-                        else catergory.value.first
-                    )
-                }
+            historyDataViewModel
+            if(historyInputViewModel.isRevised.value) updateHistory()
+            else saveHistory()
+        }
+    }
+
+    private fun saveHistory() {
+        CoroutineScope(Dispatchers.IO).launch {
+            with(historyInputViewModel) {
+                historyDataViewModel.saveHistory(
+                    time = historyDate.value,
+                    amount = amount.value.toInt(),
+                    content = content.value,
+                    paymentId = if (!isSpend.value) null
+                    else paymentMethod.value.first,
+                    categoryId = if (catergory.value.first == 0) 1
+                    else catergory.value.first
+                )
+            }
+            historyDataViewModel.getMonthHistorys(
+                historyDataViewModel.selectedDate.value.year,
+                historyDataViewModel.selectedDate.value.monthValue
+            )
+            withContext(Dispatchers.Main) {
                 val fragmentManager = activity?.supportFragmentManager!!
                 fragmentManager.beginTransaction().remove(this@HistoryInputFragment).commit()
                 fragmentManager.popBackStack()
             }
         }
+    }
 
+    private fun updateHistory() {
+        CoroutineScope(Dispatchers.IO).launch {
+            with(historyInputViewModel) {
+                historyDataViewModel.updateHistory(
+                    HistoryDto(
+                        id = historyId.value,
+                        time = historyDate.value,
+                        amount = amount.value.toInt(),
+                        content = content.value,
+                        paymentId = if (!isSpend.value) null
+                        else paymentMethod.value.first,
+                        categoryId = if (catergory.value.first == 0) 1 + (isSpend.value.toInt())
+                        else catergory.value.first
+                    )
+                )
+            }
+            historyDataViewModel.getMonthHistorys(
+                historyDataViewModel.selectedDate.value.year,
+                historyDataViewModel.selectedDate.value.monthValue
+            )
+            withContext(Dispatchers.Main) {
+                val fragmentManager = activity?.supportFragmentManager!!
+                fragmentManager.beginTransaction().remove(this@HistoryInputFragment).commit()
+                fragmentManager.popBackStack()
+            }
+        }
     }
 
     // 탭 전환시 기존 입력 항목 초기화
