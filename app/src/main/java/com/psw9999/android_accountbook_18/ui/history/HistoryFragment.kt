@@ -53,8 +53,10 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
     }
 
     override fun initViews() {
-        binding.viewModel = historyDataViewModel
+        binding.historyDataViewModel = historyDataViewModel
+        binding.historyViewModel = historyViewModel
         binding.rvHistory.adapter = historyListAdapter
+
         // TODO : 프래그먼트 매니저 구조 수정 예정
         binding.fbtnHistoryAdd.setOnClickListener {
             val transaction = activity?.supportFragmentManager?.beginTransaction()?.add(R.id.l_main_container, HistoryInputFragment())
@@ -63,22 +65,57 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
             transaction.commit()
         }
 
-        historyListAdapter.setOnHistoryClickListener {
-            val transaction = activity?.supportFragmentManager?.beginTransaction()?.add(R.id.l_main_container,
-                HistoryInputFragment().apply{
-                    arguments = Bundle().apply {
-                        putParcelable(HISTORY_ITEM, it)
-                    }
-                })
-            transaction!!.addToBackStack(null)
-            transaction.hide(this)
-            transaction.commit()
+        historyListAdapter.setOnHistoryClickListener { historyItem ->
+            if (historyViewModel.isDeleteMode.value) {
+                historyItem.isSelected = !historyItem.isSelected
+                if (historyItem.isSelected) historyViewModel.addDeleteList(historyItem.id)
+                else historyViewModel.removeDeleteList(historyItem.id)
+
+                if (historyViewModel.deleteIdList.value.isEmpty()) historyViewModel.setIsDeleteMode(false)
+            }
+
+            else {
+                val transaction = activity?.supportFragmentManager?.beginTransaction()?.add(R.id.l_main_container,
+                    HistoryInputFragment().apply{
+                        arguments = Bundle().apply {
+                            putParcelable(HISTORY_ITEM, historyItem)
+                        }
+                    })
+                transaction!!.addToBackStack(null)
+                transaction.hide(this)
+                transaction.commit()
+            }
+        }
+
+        historyListAdapter.setOnHistoryLongClickListener { historyItem ->
+            if (!historyViewModel.isDeleteMode.value) {
+                historyViewModel.setIsDeleteMode(true)
+                historyViewModel.addDeleteList(historyItem.id)
+                historyItem.isSelected = true
+            }
         }
 
         binding.tbtngTypeSelector.addOnButtonCheckedListener { group, checkedId, isChecked ->
             when(checkedId) {
                 R.id.tbtn_spend -> historyViewModel.setIsSpendEnabled(isChecked)
                 R.id.tbtn_income -> historyViewModel.setIsIncomeEnabled(isChecked)
+            }
+        }
+
+        binding.abDeleteMode.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.history_appbar_trash -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        historyDataViewModel.deleteHistories(historyViewModel.deleteIdList.value)
+                        historyDataViewModel.getMonthHistorys(
+                            historyDataViewModel.selectedDate.value.year,
+                            historyDataViewModel.selectedDate.value.monthValue
+                        )
+                        historyViewModel.setIsDeleteMode(false)
+                    }
+                    true
+                }
+                else -> true
             }
         }
     }

@@ -22,6 +22,12 @@ class HistoryViewModel : ViewModel() {
     private val _isSpendEnabled = MutableStateFlow<Boolean>(false)
     val isSpendEnabled : StateFlow<Boolean> = _isSpendEnabled
 
+    private val _isDeleteMode = MutableStateFlow<Boolean>(false)
+    val isDeleteMode : StateFlow<Boolean> = _isDeleteMode
+
+    private val _deleteIdList = MutableStateFlow<MutableList<Int>>(mutableListOf())
+    val deleteIdList : StateFlow<MutableList<Int>> = _deleteIdList
+
     fun setIsIncomeEnabled(isEnabled : Boolean) {
         this._isIncomeEnabled.value = isEnabled
     }
@@ -30,4 +36,19 @@ class HistoryViewModel : ViewModel() {
         this._isSpendEnabled.value = isEnabled
     }
 
+    fun setIsDeleteMode(isEnabled: Boolean) {
+        this._isDeleteMode.value = isEnabled
+    }
+
+    fun addDeleteList(id : Int) {
+        _deleteIdList.value.add(id)
+    }
+
+    fun removeDeleteList(id : Int) {
+        _deleteIdList.value.remove(id)
+    }
+
+    fun clearDeleteList() {
+        _deleteIdList.value.clear()
+    }
 }
