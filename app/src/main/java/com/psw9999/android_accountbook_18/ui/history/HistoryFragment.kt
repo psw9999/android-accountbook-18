@@ -1,5 +1,6 @@
 package com.psw9999.android_accountbook_18.ui.history
 
+import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.fragment.app.viewModels
@@ -13,6 +14,7 @@ import com.psw9999.android_accountbook_18.databinding.FragmentHistoryBinding
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.history.adapter.HistoryListAdapter
 import com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputFragment
+import com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputFragment.Companion.HISTORY_ITEM
 import com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel
 import com.psw9999.android_accountbook_18.util.DateUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,6 +58,18 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
         // TODO : 프래그먼트 매니저 구조 수정 예정
         binding.fbtnHistoryAdd.setOnClickListener {
             val transaction = activity?.supportFragmentManager?.beginTransaction()?.add(R.id.l_main_container, HistoryInputFragment())
+            transaction!!.addToBackStack(null)
+            transaction.hide(this)
+            transaction.commit()
+        }
+
+        historyListAdapter.setOnHistoryClickListener {
+            val transaction = activity?.supportFragmentManager?.beginTransaction()?.add(R.id.l_main_container,
+                HistoryInputFragment().apply{
+                    arguments = Bundle().apply {
+                        putParcelable(HISTORY_ITEM, it)
+                    }
+                })
             transaction!!.addToBackStack(null)
             transaction.hide(this)
             transaction.commit()

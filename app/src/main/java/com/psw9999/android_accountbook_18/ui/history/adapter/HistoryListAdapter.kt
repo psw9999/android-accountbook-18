@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.psw9999.android_accountbook_18.R
+import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import com.psw9999.android_accountbook_18.data.model.HistoryListItem
 import com.psw9999.android_accountbook_18.databinding.ItemHistoryContentBinding
 import com.psw9999.android_accountbook_18.databinding.ItemHistoryEmptyBinding
@@ -37,6 +38,12 @@ class HistoryListAdapter
         }
     }
 
+    private var onHistoryClickListener : ((HistoryItem) -> Unit)? = null
+
+    fun setOnHistoryClickListener(listener : (HistoryItem)->Unit) {
+        this.onHistoryClickListener = listener
+    }
+
     class HistoryHeaderViewHolder(private val binding: ItemHistoryHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun binding(historyHeader: HistoryListItem.HistoryHeader) {
@@ -44,10 +51,16 @@ class HistoryListAdapter
         }
     }
 
-    class HistoryContentViewHolder(private val binding: ItemHistoryContentBinding) :
+    class HistoryContentViewHolder(
+        private val binding: ItemHistoryContentBinding,
+        private val listener: ((HistoryItem) -> Unit)?
+    ) :
         RecyclerView.ViewHolder(binding.root) {
         fun binding(historyContent: HistoryListItem.HistoryContent) {
             binding.historyContent = historyContent.history
+            binding.root.setOnClickListener {
+                listener?.invoke(historyContent.history)
+            }
         }
     }
 
@@ -77,7 +90,7 @@ class HistoryListAdapter
                     LayoutInflater.from(parent.context),
                     parent,
                     false
-                )
+                ), onHistoryClickListener
             )
             R.layout.item_history_empty -> HistoryEmptyViewHolder(
                 ItemHistoryEmptyBinding.inflate(
