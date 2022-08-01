@@ -5,6 +5,6 @@ data class HistoryDto(
     var time : String,
     var amount : Int,
     var content : String,
-    var paymentId : Int,
+    var paymentId : Int?,
     var categoryId : Int
 )
