@@ -8,4 +8,6 @@ sealed class HistoryListItem {
         var spend : Int = 0,
         var income : Int = 0
     ) : HistoryListItem()
+
+    object HistoryEmpty : HistoryListItem()
 }

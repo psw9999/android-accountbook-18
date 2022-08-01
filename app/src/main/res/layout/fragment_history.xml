@@ -39,10 +39,10 @@
             <Button
                 android:id="@+id/tbtn_income"
                 style="@style/history_tg_btn_grp"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="수입 1,822,480"
+                android:text="@{`수입 ` + @string/history_amount_sum(viewModel.incomeSum)}"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:icon="@drawable/history_btn_checkbox_selector" />
@@ -50,10 +50,10 @@
             <Button
                 android:id="@+id/tbtn_spend"
                 style="@style/history_tg_btn_grp"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="지출 798,180"
+                android:text="@{`지출 ` + @string/history_amount_sum(viewModel.spendSum)}"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:icon="@drawable/history_btn_checkbox_selector" />

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.psw9999.android_accountbook_18.R
 import com.psw9999.android_accountbook_18.data.model.HistoryListItem
 import com.psw9999.android_accountbook_18.databinding.ItemHistoryContentBinding
+import com.psw9999.android_accountbook_18.databinding.ItemHistoryEmptyBinding
 import com.psw9999.android_accountbook_18.databinding.ItemHistoryHeaderBinding
 
 class HistoryListAdapter
@@ -50,10 +51,14 @@ class HistoryListAdapter
         }
     }
 
+    class HistoryEmptyViewHolder(private val binding : ItemHistoryEmptyBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is HistoryListItem.HistoryHeader -> R.layout.item_history_header
             is HistoryListItem.HistoryContent -> R.layout.item_history_content
+            is HistoryListItem.HistoryEmpty -> R.layout.item_history_empty
             else -> throw UnsupportedOperationException("Unknown view")
         }
     }
@@ -74,6 +79,13 @@ class HistoryListAdapter
                     false
                 )
             )
+            R.layout.item_history_empty -> HistoryEmptyViewHolder(
+                ItemHistoryEmptyBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
             else -> throw UnsupportedOperationException("Unknown view")
         }
     }
@@ -87,6 +99,7 @@ class HistoryListAdapter
                 is HistoryListItem.HistoryContent -> (holder as HistoryContentViewHolder).binding(
                     historyListItem
                 )
+                is HistoryListItem.HistoryEmpty -> (holder as HistoryEmptyViewHolder)
             }
         }
     }

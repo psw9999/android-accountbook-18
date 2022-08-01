@@ -31,4 +31,5 @@
     <string name="history_amount_sum">%,d</string>
     <string name="history_income_amount">%,d원</string>
     <string name="history_spend_amount">-%,d원</string>
+    <string name="history_empty_view">내역이 없습니다.</string>
 </resources>

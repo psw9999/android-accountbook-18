@@ -17,21 +17,28 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class HistoryViewModel @Inject constructor(
+class HistoryDataViewModel @Inject constructor(
     private val repository: HistoryRepository
 ) : ViewModel() {
 
-    private val _historys = MutableStateFlow<ArrayList<HistoryListItem>>(arrayListOf())
-    val historys: StateFlow<ArrayList<HistoryListItem>> = _historys
+    private val _historys = MutableStateFlow<List<HistoryItem>>(emptyList())
+    val historys: StateFlow<List<HistoryItem>> = _historys
 
     private val _selectedDate = MutableStateFlow<LocalDate>(currentDate)
     val selectedDate : StateFlow<LocalDate> = _selectedDate
+
+    private val _incomeSum = MutableStateFlow<Int>(0)
+    val incomeSum : StateFlow<Int> = _incomeSum
+
+    private val _spendSum = MutableStateFlow<Int>(0)
+    val spendSum : StateFlow<Int> = _spendSum
 
     suspend fun getMonthHistorys(year: Int, month: Int) {
         viewModelScope.launch {
             repository.getMonthHistorys(year, month).let { result ->
                 if (result is Result.Success) {
-                    _historys.value = mapperHistoryListItem(result.data)
+                    _historys.value = result.data
+                    getAmountSum(result.data)
                 } else {
                     // TODO : DB Read 실패 UI에 보여주기
                     Log.e("error","${result}")
@@ -59,29 +66,6 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    private fun mapperHistoryListItem(historyItem : List<HistoryItem>) : ArrayList<HistoryListItem> {
-        var befHeader = Pair(0, "")
-        val result = arrayListOf<HistoryListItem>()
-
-        for ((index, history) in historyItem.withIndex()) {
-            if (befHeader.second != history.time) {
-                val historyHeaderDate = dateToHistoryHeaderDate(history.time)
-                if(history.isSpend) result.add(HistoryListItem.HistoryHeader(historyHeaderDate, history.amount,0))
-                else result.add(HistoryListItem.HistoryHeader(historyHeaderDate, 0, history.amount))
-                befHeader = Pair(result.size-1, history.time)
-            } else {
-                if (history.isSpend) (result[befHeader.first] as HistoryListItem.HistoryHeader).spend += history.amount
-                else (result[befHeader.first] as HistoryListItem.HistoryHeader).income += history.amount
-            }
-            if (index == (historyItem.size-1) || history.time != historyItem[index+1].time) {
-                history.isLast = true
-            }
-
-            result.add(HistoryListItem.HistoryContent(history))
-        }
-        return result
-    }
-
     fun setSelectedDate(date: LocalDate) {
         _selectedDate.value = date
     }
@@ -98,5 +82,16 @@ class HistoryViewModel @Inject constructor(
         viewModelScope.launch {
             getMonthHistorys(_selectedDate.value.year, _selectedDate.value.monthValue)
         }
+    }
+
+    fun getAmountSum(historyItem : List<HistoryItem>) {
+        var spendSum = 0
+        var incomeSum = 0
+        historyItem.forEach {
+            if(it.isSpend) spendSum += it.amount
+            else incomeSum += it.amount
+        }
+        _spendSum.value = spendSum
+        _incomeSum.value = incomeSum
     }
 }
