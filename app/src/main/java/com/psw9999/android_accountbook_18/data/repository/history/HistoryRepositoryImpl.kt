@@ -32,7 +32,7 @@ class HistoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteHistories(idList: List<Int>) {
-        TODO("Not yet implemented")
+        historyDataSource.deleteHistories(idList)
     }
 
 }

@@ -71,6 +71,12 @@ class HistoryDataViewModel @Inject constructor(
         }
     }
 
+    suspend fun deleteHistories(idList : List<Int>) {
+        viewModelScope.launch {
+            repository.deleteHistories(idList)
+        }
+    }
+
     fun setSelectedDate(date: LocalDate) {
         _selectedDate.value = date
     }
@@ -89,7 +95,7 @@ class HistoryDataViewModel @Inject constructor(
         }
     }
 
-    fun getAmountSum(historyItem : List<HistoryItem>) {
+    private fun getAmountSum(historyItem : List<HistoryItem>) {
         var spendSum = 0
         var incomeSum = 0
         historyItem.forEach {

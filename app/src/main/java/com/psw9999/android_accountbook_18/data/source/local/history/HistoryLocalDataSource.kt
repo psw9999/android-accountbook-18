@@ -110,6 +110,12 @@ class HistoryLocalDataSource @Inject constructor(
     }
 
     override suspend fun deleteHistories(idList: List<Int>) {
-        TODO("Not yet implemented")
+        withContext(ioDispatcher) {
+            val wd = dataBaseHelper.writableDatabase
+            idList.forEach { id ->
+                val delete = "DELETE FROM $HISTORY_TABLE WHERE ${HistoryColumns.id.columnName} = $id"
+                wd.execSQL(delete)
+            }
+        }
     }
 }
