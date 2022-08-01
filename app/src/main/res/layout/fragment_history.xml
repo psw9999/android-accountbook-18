@@ -4,9 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View"/>
+
         <variable
-            name="viewModel"
-            type="com.psw9999.android_accountbook_18.ui.main.HistoryViewModel" />
+            name="historyDataViewModel"
+            type="com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel" />
+        <variable
+            name="historyViewModel"
+            type="com.psw9999.android_accountbook_18.ui.history.HistoryViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,10 +24,22 @@
             android:id="@+id/ab_history_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="@{historyViewModel.isDeleteMode ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintTop_toTopOf="parent"
-            app:setDate="@{viewModel.selectedDate}"
-            app:onPreBtnClick="@{()->viewModel.setPreviousMonth()}"
-            app:onNextBtnClick="@{()->viewModel.setNextMonth()}"/>
+            app:setDate="@{historyDataViewModel.selectedDate}"
+            app:onPreBtnClick="@{()->historyDataViewModel.setPreviousMonth()}"
+            app:onNextBtnClick="@{()->historyDataViewModel.setNextMonth()}"/>
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/ab_delete_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{historyViewModel.isDeleteMode ? View.VISIBLE : View.INVISIBLE}"
+            app:title="@string/history_trash_appbar_title"
+            app:titleCentered="true"
+            app:menu="@menu/history_appbar_menu"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/ic_property_1_back"/>
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/tbtng_type_selector"
@@ -42,7 +60,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{`수입 ` + @string/history_amount_sum(viewModel.incomeSum)}"
+                android:enabled="@{historyViewModel.isDeleteMode ? false : true}"
+                android:text="@{`수입 ` + @string/history_amount_sum(historyDataViewModel.incomeSum)}"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:icon="@drawable/history_btn_checkbox_selector" />
@@ -53,7 +72,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{`지출 ` + @string/history_amount_sum(viewModel.spendSum)}"
+                android:enabled="@{historyViewModel.isDeleteMode ? false : true}"
+                android:text="@{`지출 ` + @string/history_amount_sum(historyDataViewModel.spendSum)}"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:icon="@drawable/history_btn_checkbox_selector" />
@@ -66,6 +86,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:backgroundTint="@color/yellow"
+            android:visibility="@{historyViewModel.isDeleteMode ? View.INVISIBLE : View.VISIBLE}"
             android:clickable="true"
             android:src="@drawable/ic_property_1_plus"
             app:layout_constraintBottom_toBottomOf="parent"
