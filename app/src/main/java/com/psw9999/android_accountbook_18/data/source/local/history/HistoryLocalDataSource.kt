@@ -9,6 +9,7 @@ import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.HISTO
 import com.psw9999.android_accountbook_18.data.db.DatabaseHelper.Companion.PAYMENT_TABLE
 import com.psw9999.android_accountbook_18.data.db.HistoryColumns
 import com.psw9999.android_accountbook_18.data.db.PaymentColumns
+import com.psw9999.android_accountbook_18.data.dto.HistoryDto
 import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import com.psw9999.android_accountbook_18.util.DateUtil.dateFormat
 import com.psw9999.android_accountbook_18.util.toBoolean
@@ -88,16 +89,33 @@ class HistoryLocalDataSource @Inject constructor(
         }
 
     override suspend fun updateHistory(
-        time: String,
-        amount: Int,
-        content: String,
-        paymentId: Int?,
-        categoryId: Int
+        historyDto: HistoryDto
     ) {
-        TODO("Not yet implemented")
+        withContext(ioDispatcher) {
+            val wd = dataBaseHelper.writableDatabase
+            val historyValues = ContentValues().apply {
+                put(HistoryColumns.time.columnName, historyDto.time)
+                put(HistoryColumns.amount.columnName, historyDto.amount)
+                put(HistoryColumns.content.columnName, historyDto.content)
+                put(HistoryColumns.category_id.columnName, historyDto.categoryId)
+                put(HistoryColumns.payment_id.columnName, historyDto.paymentId)
+            }
+            wd.update(
+                HISTORY_TABLE,
+                historyValues,
+                "${HistoryColumns.id.columnName} = ${historyDto.id}",
+                null
+            )
+        }
     }
 
     override suspend fun deleteHistories(idList: List<Int>) {
-        TODO("Not yet implemented")
+        withContext(ioDispatcher) {
+            val wd = dataBaseHelper.writableDatabase
+            idList.forEach { id ->
+                val delete = "DELETE FROM $HISTORY_TABLE WHERE ${HistoryColumns.id.columnName} = $id"
+                wd.execSQL(delete)
+            }
+        }
     }
 }

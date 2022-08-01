@@ -4,11 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psw9999.android_accountbook_18.data.Result
+import com.psw9999.android_accountbook_18.data.dto.HistoryDto
 import com.psw9999.android_accountbook_18.data.repository.history.HistoryRepository
 import com.psw9999.android_accountbook_18.data.model.HistoryItem
-import com.psw9999.android_accountbook_18.data.model.HistoryListItem
 import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
-import com.psw9999.android_accountbook_18.util.DateUtil.dateToHistoryHeaderDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -66,6 +65,18 @@ class HistoryDataViewModel @Inject constructor(
         }
     }
 
+    suspend fun updateHistory(historyDto: HistoryDto) {
+        viewModelScope.launch {
+            repository.updateHistory(historyDto)
+        }
+    }
+
+    suspend fun deleteHistories(idList : List<Int>) {
+        viewModelScope.launch {
+            repository.deleteHistories(idList)
+        }
+    }
+
     fun setSelectedDate(date: LocalDate) {
         _selectedDate.value = date
     }
@@ -84,7 +95,7 @@ class HistoryDataViewModel @Inject constructor(
         }
     }
 
-    fun getAmountSum(historyItem : List<HistoryItem>) {
+    private fun getAmountSum(historyItem : List<HistoryItem>) {
         var spendSum = 0
         var incomeSum = 0
         historyItem.forEach {

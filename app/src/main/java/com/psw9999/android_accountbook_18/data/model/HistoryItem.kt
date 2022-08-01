@@ -15,5 +15,6 @@ data class HistoryItem(
     val category: String,
     val isSpend : Boolean,
     val color: Int,
-    var isLast : Boolean = false
+    var isLast : Boolean = false,
+    var isSelected : Boolean = false
 ) : Parcelable

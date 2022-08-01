@@ -16,7 +16,10 @@ class HistoryInputViewModel : ViewModel() {
             currentDate.year,
             currentDate.monthValue,
             currentDate.dayOfMonth))
-    val historyDate = _historyDate
+    val historyDate : StateFlow<String> = _historyDate
+
+    private val _historyId = MutableStateFlow(-1)
+    val historyId : StateFlow<Int> = _historyId
 
     private val _paymentMethod = MutableStateFlow(spinnerInitValue)
     val paymentMethod : StateFlow<Pair<Int,String>> = _paymentMethod
@@ -33,8 +36,11 @@ class HistoryInputViewModel : ViewModel() {
     private val _content = MutableStateFlow("")
     val content : StateFlow<String> = _content
 
-    private val _isRegisterEnabled  = MutableStateFlow(false)
+    private val _isRegisterEnabled = MutableStateFlow(false)
     val isRegisterEnabled : StateFlow<Boolean> = _isRegisterEnabled
+
+    private val _isRevised = MutableStateFlow(false)
+    val isRevised : StateFlow<Boolean> = _isRevised
 
     val stateCombine =
         combine(
@@ -46,8 +52,16 @@ class HistoryInputViewModel : ViewModel() {
             historyDate.isNotEmpty() && amount.isNotEmpty() && ((!isSpend) || paymentMethod.second.isNotEmpty())
         }
 
+    fun setHistoryId(id : Int) {
+        _historyId.value = id
+    }
+
     fun setHistoryDate(year: Int, month: Int, dayOfMonth: Int) {
-        historyDate.value = String.format(dateFormat, year, month, dayOfMonth)
+        _historyDate.value = String.format(dateFormat, year, month, dayOfMonth)
+    }
+
+    fun setHistoryDate(time : String) {
+        _historyDate.value = time
     }
 
     fun setPaymentMethod(method : Pair<Int, String>) {
@@ -72,5 +86,9 @@ class HistoryInputViewModel : ViewModel() {
 
     fun setIsRegisterEnabled(isRegisterEnabled : Boolean) {
         _isRegisterEnabled.value = isRegisterEnabled
+    }
+
+    fun setIsRevised(isRevised : Boolean) {
+        _isRevised.value = isRevised
     }
 }
