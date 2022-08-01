@@ -1,6 +1,7 @@
 package com.psw9999.android_accountbook_18.ui.history.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -39,9 +40,14 @@ class HistoryListAdapter
     }
 
     private var onHistoryClickListener : ((HistoryItem) -> Unit)? = null
+    private var onHistoryLongClickListener : ((HistoryItem) -> Unit)? = null
 
     fun setOnHistoryClickListener(listener : (HistoryItem)->Unit) {
         this.onHistoryClickListener = listener
+    }
+
+    fun setOnHistoryLongClickListener(listener: (HistoryItem) -> Unit) {
+        this.onHistoryLongClickListener = listener
     }
 
     class HistoryHeaderViewHolder(private val binding: ItemHistoryHeaderBinding) :
@@ -51,15 +57,24 @@ class HistoryListAdapter
         }
     }
 
-    class HistoryContentViewHolder(
+    inner class HistoryContentViewHolder(
         private val binding: ItemHistoryContentBinding,
-        private val listener: ((HistoryItem) -> Unit)?
+        private val onClicklistener: ((HistoryItem) -> Unit)?,
+        private val onLongClickListener: ((HistoryItem) -> Unit)?
     ) :
         RecyclerView.ViewHolder(binding.root) {
         fun binding(historyContent: HistoryListItem.HistoryContent) {
             binding.historyContent = historyContent.history
+
             binding.root.setOnClickListener {
-                listener?.invoke(historyContent.history)
+                onClicklistener?.invoke(historyContent.history)
+                notifyItemChanged(adapterPosition)
+            }
+
+            binding.root.setOnLongClickListener {
+                onLongClickListener?.invoke(historyContent.history)
+                notifyItemChanged(adapterPosition)
+                true
             }
         }
     }
@@ -90,7 +105,7 @@ class HistoryListAdapter
                     LayoutInflater.from(parent.context),
                     parent,
                     false
-                ), onHistoryClickListener
+                ), onHistoryClickListener, onHistoryLongClickListener
             )
             R.layout.item_history_empty -> HistoryEmptyViewHolder(
                 ItemHistoryEmptyBinding.inflate(
