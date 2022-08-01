@@ -15,6 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/iv_history_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:visibility="@{historyContent.selected ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_property_1_checkbox_checked" />
+
         <TextView
             android:id="@+id/tv_history_category"
             style="@style/category_tv"
@@ -25,7 +36,7 @@
             android:backgroundTint="@{historyContent.color}"
             android:gravity="center"
             android:text="@{historyContent.category}"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_history_check"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="식비" />
 
