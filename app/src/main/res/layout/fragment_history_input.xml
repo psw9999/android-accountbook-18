@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 app:navigationIcon="@drawable/ic_property_1_back"
-                app:title="@string/input_appbar_title"
+                app:title="@{viewmodel.isRevised ? @string/revise_appbar_title : @string/input_appbar_title}"
                 app:titleCentered="true" />
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -54,10 +54,11 @@
             android:id="@+id/tbtng_type_selector"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:weightSum="2"
             android:layout_marginTop="16dp"
+            app:checkTab="@{viewmodel.isSpend}"
             app:singleSelection="true"
             app:selectionRequired="true"
-            app:checkedButton="@id/tbtn_income"
             app:layout_constraintTop_toBottomOf="@id/l_ab_history_input"
             app:layout_constraintStart_toEndOf="@id/gl_input_start"
             app:layout_constraintEnd_toStartOf="@id/gl_input_end">
@@ -68,6 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:clickable="@{!viewmodel.isRevised}"
                 android:text="@string/input_tbtn_income"
                 android:textSize="12sp" />
 
@@ -77,6 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:clickable="@{!viewmodel.isRevised}"
                 android:text="@string/input_tbtn_expenditure"
                 android:textSize="12sp" />
 
@@ -140,7 +143,7 @@
             android:layout_marginBottom="40dp"
             android:backgroundTint="@color/bg_btn_register"
             android:enabled="@{viewmodel.isRegisterEnabled}"
-            android:text="@string/input_btn_register"
+            android:text="@{viewmodel.isRevised ? @string/revise_btn_register : @string/input_btn_register}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/gl_input_end"
             app:layout_constraintStart_toEndOf="@id/gl_input_start" />
@@ -165,12 +168,14 @@
             android:layout_marginBottom="8dp"
             android:background="@null"
             android:hint="@string/input_edt_hint"
+            android:text="@{viewmodel.amount}"
             android:padding="0dp"
             android:textColorHint="@color/lightPurple"
             android:textSize="14sp"
             android:textStyle="bold"
             android:inputType="number"
             android:maxLines="1"
+            android:onTextChanged="@{(edt,s,b,c)->viewmodel.setAmount(edt.toString())}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_division_amount"
             app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
             app:layout_constraintStart_toStartOf="parent"
@@ -214,12 +219,14 @@
             android:layout_marginStart="100dp"
             android:layout_marginBottom="8dp"
             android:background="@null"
+            android:text="@{viewmodel.content}"
             android:hint="@string/input_edt_hint"
             android:padding="0dp"
             android:textColorHint="@color/lightPurple"
             android:textSize="14sp"
             android:textStyle="bold"
             android:maxLines="1"
+            android:onTextChanged="@{(edt,s,b,c)->viewmodel.setContent(edt.toString())}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_division_content"
             app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
             app:layout_constraintStart_toStartOf="parent"
