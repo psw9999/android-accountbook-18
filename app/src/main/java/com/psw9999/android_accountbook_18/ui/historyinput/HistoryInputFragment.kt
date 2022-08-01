@@ -1,27 +1,31 @@
 package com.psw9999.android_accountbook_18.ui.historyinput
 
 import android.app.DatePickerDialog
-import android.util.Log
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.psw9999.android_accountbook_18.R
+import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import com.psw9999.android_accountbook_18.databinding.FragmentHistoryInputBinding
+import com.psw9999.android_accountbook_18.ui.categoryadd.CategoryAddFragment
+import com.psw9999.android_accountbook_18.ui.categoryadd.CategoryAddFragment.Companion.IS_SPEND
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.historyinput.adapter.InputSpinnerAdapter
 import com.psw9999.android_accountbook_18.ui.main.CategoryViewModel
-import com.psw9999.android_accountbook_18.ui.main.HistoryViewModel
+import com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel
 import com.psw9999.android_accountbook_18.ui.main.PaymentViewModel
+import com.psw9999.android_accountbook_18.ui.paymentadd.PaymentAddFragment
 import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import java.util.*
 
 @AndroidEntryPoint
 class HistoryInputFragment :
@@ -29,26 +33,49 @@ class HistoryInputFragment :
 
     companion object {
         val spinnerInitValue = Pair(0, "")
+        const val HISTORY_ITEM = "HISTORY_ITEM"
     }
 
     private val historyInputViewModel: HistoryInputViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by activityViewModels()
     private val categoryViewModel: CategoryViewModel by activityViewModels()
-    private val historyViewModel : HistoryViewModel by activityViewModels()
+    private val historyDataViewModel : HistoryDataViewModel by activityViewModels()
 
     private val paymentAdapter by lazy { InputSpinnerAdapter(activityContext) }
     private val categoryAdapter by lazy { InputSpinnerAdapter(activityContext) }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        arguments?.apply {
+            setBefHistoryValue(this.getParcelable(HISTORY_ITEM)!!)
+        }
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    private fun setBefHistoryValue(historyItem: HistoryItem) {
+        with(historyInputViewModel) {
+            setIsRevised(true)
+            setHistoryDate(historyItem.time)
+            setIsSpend(historyItem.isSpend)
+            setAmount(historyItem.amount.toString())
+            setContent(historyItem.content)
+            if(historyItem.isSpend) historyInputViewModel.setPaymentMethod(Pair(historyItem.paymentId,historyItem.payment!!))
+            setCategory(Pair(historyItem.categoryId,historyItem.category))
+        }
+    }
+
     override fun initViews() {
         binding.viewmodel = historyInputViewModel
-
         // 화면 config 대응
         val date = historyInputViewModel.historyDate.value.split("-")
         val datePicker = DatePickerDialog(
             activityContext, { _, year, month, dayOfMonth ->
-                historyInputViewModel.setHistoryDate(year, month, dayOfMonth)
+                historyInputViewModel.setHistoryDate(year, month+1, dayOfMonth)
             },
-            date[0].toInt(), date[1].toInt() - 1, date[2].toInt()
+            date[0].toInt(), date[1].toInt()-1, date[2].toInt()
         )
 
         binding.tvDate.setOnClickListener {
@@ -68,6 +95,14 @@ class HistoryInputFragment :
                 ) {
                     if (position == paymentAdapter.count - 1) {
                         // TODO : 결제수단 추가하기 프래그먼트로 넘어가기
+                        val transaction =
+                            activity?.
+                            supportFragmentManager?.
+                            beginTransaction()?.
+                            add(R.id.l_main_container, PaymentAddFragment())
+                        transaction!!.addToBackStack(null)
+                        transaction.hide(this@HistoryInputFragment)
+                        transaction.commit()
                     } else {
                         historyInputViewModel.setPaymentMethod(paymentAdapter.getItem(position))
                     }
@@ -86,6 +121,18 @@ class HistoryInputFragment :
                     id: Long
                 ) {
                     if (position >= categoryAdapter.count - 1) {
+                        val transaction =
+                            activity?.
+                            supportFragmentManager?.
+                            beginTransaction()?.
+                            add(R.id.l_main_container, CategoryAddFragment().apply {
+                                arguments = Bundle().apply {
+                                    putBoolean(IS_SPEND, historyInputViewModel.isSpend.value)
+                                }
+                            })
+                        transaction!!.addToBackStack(null)
+                        transaction.hide(this@HistoryInputFragment)
+                        transaction.commit()
                         // TODO : 분류 추가하기 프래그먼트로 넘어가기
                     } else {
                         historyInputViewModel.setCategory(categoryAdapter.getItem(position))
@@ -99,27 +146,25 @@ class HistoryInputFragment :
         binding.tbtngTypeSelector.addOnButtonCheckedListener { group, _, _ ->
             if (group.checkedButtonId == R.id.tbtn_spend) historyInputViewModel.setIsSpend(true)
             else historyInputViewModel.setIsSpend(false)
-        }
-
-        binding.edtAmount.addTextChangedListener {
-            historyInputViewModel.setAmount(it.toString())
-        }
-
-        binding.edtRegisterContent.addTextChangedListener {
-            historyInputViewModel.setContent(it.toString())
+            if(!historyInputViewModel.isRevised.value) clearInputField()
         }
 
         binding.btnRegister.setOnClickListener {
-            with(historyInputViewModel) {
-                historyViewModel.saveHistory(
-                    time = historyDate.value,
-                    amount = amount.value.toInt(),
-                    content = content.value,
-                    paymentId = if (!isSpend.value) null
-                    else paymentMethod.value.first,
-                    categoryId = if (catergory.value.first == 0) 1
-                    else catergory.value.first
-                )
+            CoroutineScope(Dispatchers.Main).launch {
+                with(historyInputViewModel) {
+                    historyDataViewModel.saveHistory(
+                        time = historyDate.value,
+                        amount = amount.value.toInt(),
+                        content = content.value,
+                        paymentId = if (!isSpend.value) null
+                        else paymentMethod.value.first,
+                        categoryId = if (catergory.value.first == 0) 1
+                        else catergory.value.first
+                    )
+                }
+                val fragmentManager = activity?.supportFragmentManager!!
+                fragmentManager.beginTransaction().remove(this@HistoryInputFragment).commit()
+                fragmentManager.popBackStack()
             }
         }
 
@@ -129,9 +174,9 @@ class HistoryInputFragment :
     private fun clearInputField() {
         with(binding) {
             historyInputViewModel.setHistoryDate(
-                currentDate.get(Calendar.YEAR),
-                currentDate.get(Calendar.MONTH),
-                currentDate.get(Calendar.DAY_OF_MONTH)
+                currentDate.year,
+                currentDate.monthValue,
+                currentDate.dayOfMonth
             )
 
             historyInputViewModel.setPaymentMethod(spinnerInitValue)
@@ -183,12 +228,6 @@ class HistoryInputFragment :
                 launch {
                     historyInputViewModel.catergory.collectLatest {
                         categoryAdapter.setSelectedValue(it)
-                    }
-                }
-
-                launch {
-                    historyInputViewModel.isSpend.collectLatest {
-                        clearInputField()
                     }
                 }
 
