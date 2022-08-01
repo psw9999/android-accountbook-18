@@ -66,9 +66,11 @@ class HistoryLocalDataSource @Inject constructor(
                                 getString(getColumnIndexOrThrow(HistoryColumns.time.columnName)),
                                 getInt(getColumnIndexOrThrow(HistoryColumns.amount.columnName)),
                                 getString(getColumnIndexOrThrow(HistoryColumns.content.columnName)),
+                                getInt(getColumnIndexOrThrow(HistoryColumns.payment_id.columnName)),
                                 getString(getColumnIndexOrThrow(PaymentColumns.method.columnName)),
-                                getInt(getColumnIndexOrThrow(CategoryColumns.is_spend.columnName)).toBoolean(),
+                                getInt(getColumnIndexOrThrow(HistoryColumns.category_id.columnName)),
                                 getString(getColumnIndexOrThrow(CategoryColumns.title.columnName)),
+                                getInt(getColumnIndexOrThrow(CategoryColumns.is_spend.columnName)).toBoolean(),
                                 getInt(getColumnIndexOrThrow(CategoryColumns.color.columnName))
                             )
                         )
