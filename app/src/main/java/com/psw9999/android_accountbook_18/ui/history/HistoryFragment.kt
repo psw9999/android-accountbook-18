@@ -2,7 +2,7 @@ package com.psw9999.android_accountbook_18.ui.history
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_history){
 
-    private val historyDataViewModel : HistoryDataViewModel by viewModels()
+    private val historyDataViewModel : HistoryDataViewModel by activityViewModels()
     private val historyViewModel : HistoryViewModel by viewModels()
     private val historyListAdapter : HistoryListAdapter by lazy {HistoryListAdapter()}
 
