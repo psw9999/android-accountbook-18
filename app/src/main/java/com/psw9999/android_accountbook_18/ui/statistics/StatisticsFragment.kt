@@ -1,60 +1,102 @@
 package com.psw9999.android_accountbook_18.ui.statistics
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import com.psw9999.android_accountbook_18.R
+import com.psw9999.android_accountbook_18.data.model.HistoryItem
+import com.psw9999.android_accountbook_18.data.model.StatisticsItem
+import com.psw9999.android_accountbook_18.databinding.FragmentStatisticsBinding
+import com.psw9999.android_accountbook_18.ui.common.BaseFragment
+import com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel
+import com.psw9999.android_accountbook_18.ui.statistics.adapter.StatisticsListAdapter
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>(R.layout.fragment_statistics){
 
-/**
- * A simple [Fragment] subclass.
- * Use the [StatisticsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class StatisticsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val historyDataViewModel : HistoryDataViewModel by activityViewModels()
+    private val statisticsListAdapter : StatisticsListAdapter by lazy { StatisticsListAdapter() }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    override fun observe() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                historyDataViewModel.histories.collectLatest {
+                    loadHistoryData(it)
+                }
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_statistics, container, false)
+    override fun initViews() {
+        binding.historyDataViewModel = historyDataViewModel
+        binding.rvStatisticsCategory.adapter = statisticsListAdapter
+        setupPieChart()
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment StatisticsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            StatisticsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun setupPieChart() {
+        with(binding.statisticsPiechart) {
+            isRotationEnabled = false
+            setDrawEntryLabels(false)
+            legend.isEnabled = false
+            description.isEnabled = false
+        }
     }
+
+    private fun loadHistoryData(histories : List<HistoryItem>) {
+        // 카테고리 별 지출 합계 구하기
+        val categorySum = mutableMapOf<Pair<String,Int>, Int>()
+        histories.forEach { history ->
+            if (history.isSpend) {
+                val pair = Pair(history.category, history.color)
+                categorySum[pair] = categorySum.getOrDefault(pair, 0) + history.amount
+            }
+        }
+        setPieChartData(categorySum)
+        setRecyclerViewData(categorySum)
+    }
+
+    private fun setPieChartData(categorySum : MutableMap<Pair<String, Int>, Int>) {
+        val pieEntries = ArrayList<PieEntry>()
+        val colorLists = ArrayList<Int>()
+
+        categorySum.forEach { (category, amount) ->
+            pieEntries.add(PieEntry(amount.toFloat(), category.first))
+            colorLists.add(category.second)
+        }
+
+        val dataSet = PieDataSet(pieEntries,"")
+        dataSet.colors = colorLists
+
+        val data = PieData(dataSet)
+        data.setDrawValues(false)
+
+        binding.statisticsPiechart.data = data
+        binding.statisticsPiechart.animateY(1000, Easing.EaseInOutQuad)
+        binding.statisticsPiechart.invalidate()
+    }
+
+    private fun setRecyclerViewData(categorySum : MutableMap<Pair<String, Int>, Int>) {
+        val categoryList = categorySum.toList().sortedBy { it.second }
+        val statisticsList = arrayListOf<StatisticsItem>().apply {
+            categoryList.forEach {
+                this.add(
+                    StatisticsItem(
+                        category = it.first.first,
+                        categoryColor = it.first.second,
+                        spendAmount = it.second,
+                        percent = ((it.second.toDouble() / historyDataViewModel.spendSum.value) * 100).roundToInt()
+                    )
+                )
+            }
+        }
+        statisticsListAdapter.submitList(statisticsList)
+    }
+
 }
