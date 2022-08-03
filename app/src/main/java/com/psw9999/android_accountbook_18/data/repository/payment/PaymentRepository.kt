@@ -7,8 +7,8 @@ interface PaymentRepository {
 
     suspend fun getAllPayments(): Result<List<PaymentDto>>
 
-    suspend fun savePayment(title: String)
+    suspend fun savePayment(title: String): Result<Boolean>
 
-    suspend fun updatePayment(title: String)
+    suspend fun updatePayment(paymentDto: PaymentDto): Result<Boolean>
 
 }

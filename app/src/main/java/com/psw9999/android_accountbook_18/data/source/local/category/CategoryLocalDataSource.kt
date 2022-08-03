@@ -39,20 +39,42 @@ class CategoryLocalDataSource @Inject constructor(
         }
     }
 
-    override suspend fun saveCategorys(isSpend: Boolean, title: String, color: Int) {
+    override suspend fun saveCategorys(isSpend: Boolean, title: String, color: Int): Result<Boolean> =
         withContext(ioDispatcher) {
-            val wd = dataBaseHelper.writableDatabase
-            val categoryValues = ContentValues().apply {
-                put(CategoryColumns.is_spend.columnName, isSpend.toInt())
-                put(CategoryColumns.title.columnName, title)
-                put(CategoryColumns.color.columnName, color)
+            return@withContext try {
+                val wd = dataBaseHelper.writableDatabase
+                val categoryValues = ContentValues().apply {
+                    put(CategoryColumns.is_spend.columnName, isSpend.toInt())
+                    put(CategoryColumns.title.columnName, title)
+                    put(CategoryColumns.color.columnName, color)
+                }
+                wd.insert(CATEGORY_TABLE, null, categoryValues)
+                Result.Success(true)
+            } catch (e: Exception) {
+                Result.Error(e)
             }
-            wd.insert(CATEGORY_TABLE, null, categoryValues)
         }
-    }
 
-    override suspend fun updatePayment(isSpend: Boolean, title: String, color: Int) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun updatePayment(categoryDto: CategoryDto): Result<Boolean> =
+        withContext(ioDispatcher) {
+            return@withContext try {
+                val wd = dataBaseHelper.writableDatabase
+                val categoryValues = ContentValues().apply {
+                    put(CategoryColumns.id.columnName, categoryDto.id)
+                    put(CategoryColumns.title.columnName, categoryDto.name)
+                    put(CategoryColumns.color.columnName, categoryDto.color)
+                    put(CategoryColumns.is_spend.columnName, categoryDto.isSpend)
+                }
+                wd.update(
+                    CATEGORY_TABLE,
+                    categoryValues,
+                    "${CategoryColumns.id.columnName} = ${categoryDto.id}",
+                    null
+                )
+                Result.Success(true)
+            } catch (e: Exception) {
+                Result.Error(e)
+            }
+        }
 }
 

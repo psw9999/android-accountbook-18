@@ -24,10 +24,10 @@ class CategoryColorAdapter(
         this.categoryColorList = categoryColorList
     }
 
-    fun setSelectedColor(selectedColor: Int) {
-        if(this.selectedColorIndex != selectedColor) {
-            this.selectedColorIndex = selectedColor
-            onColorClickListener?.invoke(selectedColor)
+    fun setSelectedColorIndex(selectedColorIndex : Int) {
+        if(this.selectedColorIndex != selectedColorIndex) {
+            this.selectedColorIndex = selectedColorIndex
+            onColorClickListener?.invoke(selectedColorIndex)
             notifyDataSetChanged()
         }
     }
@@ -52,7 +52,7 @@ class CategoryColorAdapter(
                 categoryColor.scaleX = 0.7F
             }
             categoryColor.setOnClickListener {
-                setSelectedColor(position)
+                setSelectedColorIndex(position)
             }
             return root
         }

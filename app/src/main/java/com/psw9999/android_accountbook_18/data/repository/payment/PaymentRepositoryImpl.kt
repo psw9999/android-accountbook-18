@@ -14,11 +14,10 @@ class PaymentRepositoryImpl @Inject constructor(
     override suspend fun getAllPayments(): Result<List<PaymentDto>> =
         PaymentDataSource.getAllPayments()
 
-    override suspend fun savePayment(title: String) {
+    override suspend fun savePayment(title: String): Result<Boolean> =
         PaymentDataSource.savePayment(title)
-    }
 
-    override suspend fun updatePayment(title: String) {
-        PaymentDataSource.updatePayment(title)
-    }
+    override suspend fun updatePayment(paymentDto: PaymentDto): Result<Boolean> =
+        PaymentDataSource.updatePayment(paymentDto)
+
 }

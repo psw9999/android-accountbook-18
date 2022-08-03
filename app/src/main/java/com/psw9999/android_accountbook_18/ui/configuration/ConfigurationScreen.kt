@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import com.psw9999.android_accountbook_18.R
+import com.psw9999.android_accountbook_18.data.dto.CategoryDto
+import com.psw9999.android_accountbook_18.data.dto.PaymentDto
 import com.psw9999.android_accountbook_18.ui.configuration.item.*
 import com.psw9999.android_accountbook_18.ui.main.CategoryViewModel
 import com.psw9999.android_accountbook_18.ui.main.PaymentViewModel
@@ -17,7 +19,11 @@ import com.psw9999.android_accountbook_18.ui.main.PaymentViewModel
 @Composable
 fun ConfigurationScreen(
     paymentViewModel: PaymentViewModel,
-    categoryViewModel: CategoryViewModel
+    categoryViewModel: CategoryViewModel,
+    paymentEditClickListener : ((PaymentDto) -> Unit),
+    categoryEditClickListener : ((CategoryDto) -> Unit),
+    paymentAddClickListener : (() -> Unit),
+    categoryAddClickListener : ((Boolean) -> Unit)
 ) {
     val paymentList by paymentViewModel.payments.collectAsState()
     val categoryList by categoryViewModel.category.collectAsState()
@@ -35,20 +41,32 @@ fun ConfigurationScreen(
                 when (configurationType) {
                     ConfigurationType.Payment ->
                         items(items = paymentList) { payment ->
-                            ConfigurationPayment(paymentName = payment.method)
+                            ConfigurationPayment(paymentName = payment.method) {
+                                paymentEditClickListener.invoke(payment)
+                            }
                         }
                     ConfigurationType.SpendCategory ->
                         items(items = categoryList.filter { it.isSpend }) { category ->
-                            ConfigurationCategory(category = category)
+                            ConfigurationCategory(category = category) {
+                                categoryEditClickListener.invoke(category)
+                            }
                         }
                     ConfigurationType.IncomeCategory ->
                         items(items = categoryList.filter { !it.isSpend }) { category ->
-                            ConfigurationCategory(category = category)
+                            ConfigurationCategory(category = category) {
+                                categoryEditClickListener.invoke(category)
+                            }
                         }
                 }
 
                 item {
-                    ConfigurationAddContent(type = configurationType.title)
+                    ConfigurationAddContent(type = configurationType.title) {
+                        when(configurationType) {
+                            ConfigurationType.Payment -> paymentAddClickListener()
+                            ConfigurationType.SpendCategory -> categoryAddClickListener(true)
+                            ConfigurationType.IncomeCategory -> categoryAddClickListener(false)
+                        }
+                    }
                 }
             }
         }

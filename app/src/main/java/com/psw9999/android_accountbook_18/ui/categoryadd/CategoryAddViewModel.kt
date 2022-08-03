@@ -15,6 +15,14 @@ class CategoryAddViewModel : ViewModel() {
     private val _selectedColorIndex = MutableLiveData(0)
     val selectedColorIndex : LiveData<Int> = _selectedColorIndex
 
+    private val _isRevising = MutableLiveData(false)
+    val isRevising : LiveData<Boolean> = _isRevising
+
+    private val _categoryId = MutableLiveData(0)
+    val categoryId: LiveData<Int> = _categoryId
+
+    var befColor : Int = 0
+
     fun setIsSpend(isSpend : Boolean) {
         _isSpend.value = isSpend
     }
@@ -25,6 +33,14 @@ class CategoryAddViewModel : ViewModel() {
 
     fun setSelectedColorIndex(index : Int) {
         _selectedColorIndex.value = index
+    }
+
+    fun setIsRevising(isRevising: Boolean) {
+        _isRevising.value = isRevising
+    }
+
+    fun setCategoryId(categoryId: Int) {
+        _categoryId.value = categoryId
     }
 
 }

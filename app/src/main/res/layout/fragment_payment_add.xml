@@ -27,9 +27,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 app:navigationIcon="@drawable/ic_property_1_back"
-                app:title="@string/add_payment_appbar_title"
+                app:title="@{viewModel.isRevising ? @string/revise_payment_appbar_title : @string/add_payment_appbar_title}"
                 app:titleCentered="true" />
         </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/pb_payment_loading"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/l_ab_add_payment" />
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
@@ -58,9 +66,11 @@
             android:inputType="text"
             android:maxLines="1"
             android:padding="0dp"
+            android:text="@{viewModel.paymentTitle}"
             android:textColorHint="@color/lightPurple"
             android:textSize="14sp"
             android:textStyle="bold"
+            android:onTextChanged="@{(edt,s,b,c)-> viewModel.setPaymentTitle(edt.toString())}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_division_add_payment"
             app:layout_constraintEnd_toEndOf="@id/tv_division_add_payment"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,8 +84,8 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="40dp"
             android:backgroundTint="@color/bg_btn_register"
-            android:enabled="@{viewModel.paymentTitle.length() > 2 ? true : false}"
-            android:text="@string/input_btn_register"
+            android:enabled="@{viewModel.paymentTitle.length() >= 2 ? true : false}"
+            android:text="@{viewModel.isRevising ? @string/revise_btn_register : @string/input_btn_register}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

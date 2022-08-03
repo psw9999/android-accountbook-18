@@ -1,39 +1,93 @@
 package com.psw9999.android_accountbook_18.ui.paymentadd
 
-import androidx.core.widget.addTextChangedListener
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.psw9999.android_accountbook_18.R
+import com.psw9999.android_accountbook_18.data.dto.PaymentDto
 import com.psw9999.android_accountbook_18.databinding.FragmentPaymentAddBinding
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.main.PaymentViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class PaymentAddFragment
     : BaseFragment<FragmentPaymentAddBinding>(R.layout.fragment_payment_add) {
 
-    private val paymentAddViewModel : PaymentAddViewModel by viewModels()
+    companion object {
+        const val PAYMENT_ITEM = "PAYMENT_ITEM"
+    }
+
+    private val paymentAddViewModel: PaymentAddViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by activityViewModels()
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        arguments?.apply {
+            setBefPaymentValue(this.getParcelable(PAYMENT_ITEM)!!)
+        }
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    private fun setBefPaymentValue(paymentDto: PaymentDto) {
+        with(paymentAddViewModel) {
+            setIsRevising(true)
+            setPaymentId(paymentDto.id)
+            setPaymentTitle(paymentDto.method)
+        }
+    }
+
     override fun observe() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    paymentViewModel.isLoading.collectLatest { isLoading ->
+                        if (isLoading) binding.pbPaymentLoading.visibility = View.VISIBLE
+                        else binding.pbPaymentLoading.visibility = View.GONE
+                    }
+                }
+                launch {
+                    paymentViewModel.isComplete.collectLatest { isComplete ->
+                        if (isComplete) {
+                            paymentViewModel.setIsComplete(false)
+                            val fragmentManager = activity?.supportFragmentManager!!
+                            fragmentManager.beginTransaction().remove(this@PaymentAddFragment).commit()
+                            fragmentManager.popBackStack()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun initViews() {
         binding.viewModel = paymentAddViewModel
-        binding.edtPayment.addTextChangedListener {
-            paymentAddViewModel.setPaymentTitle(it.toString())
-        }
 
         binding.btnPaymentRegister.setOnClickListener {
-            CoroutineScope(Dispatchers.Main).launch {
-                paymentViewModel.savePayment(paymentAddViewModel.paymentTitle.value!!)
-                paymentViewModel.getAllPayments()
-                // TODO : 프래그먼트 종료 로직 개선
-                val fragmentManager = activity?.supportFragmentManager!!
-                fragmentManager.beginTransaction().remove(this@PaymentAddFragment).commit()
-                fragmentManager.popBackStack()
+            with(paymentAddViewModel) {
+                if (isRevising.value!!) {
+                    paymentViewModel.updatePayment(
+                        PaymentDto(
+                            id = paymentId.value!!,
+                            method = paymentTitle.value!!
+                        )
+                    )
+                } else {
+                    paymentViewModel.savePayment(
+                        paymentTitle.value!!
+                    )
+                }
             }
         }
     }
