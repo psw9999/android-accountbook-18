@@ -1,19 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.calendar.CalendarFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="calendar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <variable
+            name="historyDataViewModel"
+            type="com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.calendar.CalendarFragment">
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.DateAppBar
+            android:id="@+id/ab_calendar_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:onNextBtnClick="@{()->historyDataViewModel.setNextMonth()}"
+            app:onPreBtnClick="@{()->historyDataViewModel.setPreviousMonth()}"
+            app:setDate="@{historyDataViewModel.selectedDate}"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_calendar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="24dp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/tv_division_calendar_income"
+            app:layout_constraintTop_toBottomOf="@id/ab_calendar_date"
+            app:spanCount="7" />
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.TextViewWithDivision
+            android:id="@+id/tv_division_calendar_income"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_division_calendar_spend"
+            app:layout_constraintEnd_toEndOf="@id/tv_division_calendar_sum"
+            app:layout_constraintStart_toStartOf="@id/tv_division_calendar_sum"
+            app:setTitle="수입" />
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.TextViewWithDivision
+            android:id="@+id/tv_division_calendar_spend"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@id/tv_division_calendar_sum"
+            app:layout_constraintEnd_toEndOf="@id/tv_division_calendar_sum"
+            app:layout_constraintStart_toStartOf="@id/tv_division_calendar_sum"
+            app:setTitle="지출" />
+
+        <com.psw9999.android_accountbook_18.ui.common.customview.TextViewWithDivision
+            android:id="@+id/tv_division_calendar_sum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="29dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:setTitle="총합" />
+
+        <TextView
+            android:id="@+id/tv_calendar_sum_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/purple"
+            android:textStyle="bold"
+            android:text="@{@string/calendar_amount(historyDataViewModel.incomeSum - historyDataViewModel.spendSum)}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_division_calendar_sum"
+            app:layout_constraintEnd_toEndOf="@id/tv_division_calendar_sum"
+            tools:text="3,265,000" />
+
+        <TextView
+            android:id="@+id/tv_calendar_spend_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/red"
+            android:textStyle="bold"
+            android:text="@{@string/calendar_amount(historyDataViewModel.spendSum * -1)}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_division_calendar_spend"
+            app:layout_constraintEnd_toEndOf="@id/tv_division_calendar_spend"
+            tools:text="-430,000" />
+
+        <TextView
+            android:id="@+id/tv_calendar_income_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/income"
+            android:textStyle="bold"
+            android:text="@{@string/calendar_amount(historyDataViewModel.incomeSum)}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_division_calendar_income"
+            app:layout_constraintEnd_toEndOf="@id/tv_division_calendar_income"
+            tools:text="900,000" />
+
+        <ProgressBar
+            android:id="@+id/rv_calendar_loading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/rv_calendar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/rv_calendar" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
