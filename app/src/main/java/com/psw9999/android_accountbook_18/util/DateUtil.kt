@@ -13,4 +13,13 @@ object DateUtil {
         return historyHeaderFormat.format(LocalDate.parse(date, DateTimeFormatter.ISO_DATE))
     }
 
+    fun getDayValue(date: String) =
+        LocalDate.parse(date, DateTimeFormatter.ISO_DATE).dayOfMonth
+
+    fun isSameMonth(first: LocalDate, second: LocalDate): Boolean =
+        first.year == second.year && first.monthValue == second.monthValue
+
+    fun isSameDay(date : LocalDate) : Boolean =
+        date.year == currentDate.year && date.monthValue == currentDate.monthValue && date.dayOfMonth == currentDate.dayOfMonth
+
 }
