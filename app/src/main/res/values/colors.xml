@@ -10,6 +10,9 @@
     <color name="white_50">#80FFFFFF</color>
     <color name="income">#4EAABA</color>
 
+    <color name="saturday">#2962FF</color>
+    <color name="sunday">#D32F2F</color>
+
     <color name="income_category_1">#9BD182</color>
     <color name="income_category_2">#A3CB7A</color>
     <color name="income_category_3">#B5CC7A</color>
