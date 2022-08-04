@@ -20,6 +20,7 @@
     <string name="input_edt_hint">입력하세요</string>
     <string name="input_sp_hint">선택하세요</string>
     <string name="input_sp_add">추가하기</string>
+    <string name="input_amount">%,d</string>
 
     <string name="revise_payment_appbar_title">결제 수단 수정하기</string>
     <string name="add_payment_appbar_title">결제 수단 추가하기</string>

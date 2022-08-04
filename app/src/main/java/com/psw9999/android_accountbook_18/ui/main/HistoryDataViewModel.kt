@@ -1,6 +1,5 @@
 package com.psw9999.android_accountbook_18.ui.main
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psw9999.android_accountbook_18.data.Result
@@ -8,6 +7,7 @@ import com.psw9999.android_accountbook_18.data.dto.HistoryDto
 import com.psw9999.android_accountbook_18.data.repository.history.HistoryRepository
 import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
+import com.psw9999.android_accountbook_18.util.toast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,22 +32,33 @@ class HistoryDataViewModel @Inject constructor(
     private val _spendSum = MutableStateFlow<Int>(0)
     val spendSum : StateFlow<Int> = _spendSum
 
-    fun getMonthHistorys(year: Int, month: Int) {
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading : StateFlow<Boolean> = _isLoading
+
+    private val _isComplete = MutableStateFlow(false)
+    val isComplete : StateFlow<Boolean> = _isComplete
+
+    fun setIsComplete(isComplete : Boolean) {
+        _isComplete.value = isComplete
+    }
+
+    fun getMonthHistories(year: Int, month: Int) {
+        _isLoading.value = true
         viewModelScope.launch {
             repository.getMonthHistorys(year, month).let { result ->
                 if (result is Result.Success) {
                     getAmountSum(result.data)
                     _histories.value = result.data
                 } else {
-                    // TODO : DB Read 실패 UI에 보여주기
-                    Log.e("error","${result}")
+                    toast("내역 로드에 실패하였습니다.")
                     _histories.value = arrayListOf()
                 }
+                _isLoading.value = false
             }
         }
     }
 
-    suspend fun saveHistory(
+    fun saveHistory(
         time: String,
         amount: Int,
         content: String,
@@ -61,40 +72,61 @@ class HistoryDataViewModel @Inject constructor(
                 content = content,
                 paymentId = paymentId,
                 categoryId = categoryId
-            )
+            ).let { result ->
+                if (result is Result.Success) {
+                    _isComplete.value = true
+                    toast("내역을 저장하였습니다.")
+                } else {
+                    toast("내역 저장에 실패하였습니다.")
+                }
+            }
         }
     }
 
-    suspend fun updateHistory(historyDto: HistoryDto) {
+    fun updateHistory(historyDto: HistoryDto) {
         viewModelScope.launch {
-            repository.updateHistory(historyDto)
+            repository.updateHistory(historyDto).let { result ->
+                if (result is Result.Success) {
+                    _isComplete.value = true
+                    toast("내역을 업데이트하였습니다.")
+                } else {
+                    toast("내역 업데이트에 실패하였습니다.")
+                }
+            }
         }
     }
 
-    suspend fun deleteHistories(idList : List<Int>) {
+    fun deleteHistories(idList : List<Int>) {
         viewModelScope.launch {
-            repository.deleteHistories(idList)
+            repository.deleteHistories(idList).let { result ->
+                if (result is Result.Success) {
+                    _isComplete.value = true
+                    toast("내역을 삭제하였습니다.")
+                } else {
+                    toast("내역 삭제에 실패하였습니다.")
+                }
+            }
         }
     }
 
     fun setSelectedDate(year : Int, month : Int) {
         _selectedDate.value = LocalDate.of(year, month,1)
         viewModelScope.launch {
-            getMonthHistorys(_selectedDate.value.year, _selectedDate.value.monthValue)
+            getMonthHistories(_selectedDate.value.year, _selectedDate.value.monthValue)
         }
     }
 
     fun setPreviousMonth() {
         _selectedDate.value = _selectedDate.value.minusMonths(1)
         viewModelScope.launch {
-            getMonthHistorys(_selectedDate.value.year, _selectedDate.value.monthValue)
+            getMonthHistories(_selectedDate.value.year, _selectedDate.value.monthValue)
         }
     }
 
     fun setNextMonth() {
         _selectedDate.value = _selectedDate.value.plusMonths(1)
         viewModelScope.launch {
-            getMonthHistorys(_selectedDate.value.year, _selectedDate.value.monthValue)
+            getMonthHistories(_selectedDate.value.year, _selectedDate.value.monthValue)
         }
     }
 

@@ -21,18 +21,18 @@ class HistoryRepositoryImpl @Inject constructor(
         content: String,
         paymentId: Int?,
         categoryId: Int
-    ) {
+    ): Result<Boolean> =
         historyDataSource.saveHistory(time, amount, content, paymentId, categoryId)
-    }
+
 
     override suspend fun updateHistory(
         historyDto: HistoryDto
-    ) {
+    ): Result<Boolean> =
         historyDataSource.updateHistory(historyDto)
-    }
 
-    override suspend fun deleteHistories(idList: List<Int>) {
+
+    override suspend fun deleteHistories(idList: List<Int>): Result<Boolean> =
         historyDataSource.deleteHistories(idList)
-    }
+
 
 }

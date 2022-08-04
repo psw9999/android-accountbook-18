@@ -18,6 +18,7 @@ class InputSpinnerAdapter(
     private val spinnerAddMenu = Pair(0,context.getString(R.string.input_sp_add))
     private var spinnerList : MutableList<Pair<Int,String>> = mutableListOf(spinnerAddMenu)
     private var selectedValue : Pair<Int, String> = spinnerInitValue
+    private var isSpinnerSelected: Boolean = false
 
     fun setSpinnerList(spinnerList : List<Pair<Int,String>>) {
         this.spinnerList.apply {
@@ -29,6 +30,11 @@ class InputSpinnerAdapter(
 
     fun setSelectedValue(selectedValue : Pair<Int, String>) {
         this.selectedValue = selectedValue
+        notifyDataSetChanged()
+    }
+
+    fun setIsSelected(isSelected : Boolean) {
+        this.isSpinnerSelected = isSelected
         notifyDataSetChanged()
     }
 
@@ -44,13 +50,16 @@ class InputSpinnerAdapter(
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View {
         val binding =
             ItemInputSpinnerHeadBinding.inflate(LayoutInflater.from(context), viewGroup, false)
-        if (selectedValue.second.isEmpty()) {
-            binding.tvSpinnerHead.text = context.getString(R.string.input_sp_hint)
-            binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.lightPurple))
-        } else {
-            binding.tvSpinnerHead.text = selectedValue.second
+        if (selectedValue.second.isEmpty()) binding.tvSpinnerHead.text = context.getString(R.string.input_sp_hint)
+        else binding.tvSpinnerHead.text = selectedValue.second
+        if (isSpinnerSelected) {
             binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.purple))
+            binding.ivSpinnerHead.scaleY = -1F
+        } else {
+            binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.lightPurple))
+            binding.ivSpinnerHead.scaleY = 1F
         }
+
         return binding.root
     }
 
