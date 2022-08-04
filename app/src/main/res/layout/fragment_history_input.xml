@@ -70,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:clickable="@{!viewmodel.isRevised}"
+                android:alpha="@{viewmodel.isRevised ? 0.6f : 1.0f}"
                 android:text="@string/input_tbtn_income"
                 android:textSize="12sp" />
 
@@ -79,6 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:alpha="@{viewmodel.isRevised ? 0.4f : 1.0f}"
                 android:clickable="@{!viewmodel.isRevised}"
                 android:text="@string/input_tbtn_expenditure"
                 android:textSize="12sp" />
