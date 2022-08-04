@@ -10,6 +10,9 @@ class HistoryInputSpinner(
 
     private var listener : OnItemSelectedListener? = null
 
+    private var onDropDownEventsListener: OnDropDownEventsListener? = null
+    private var isDropDownOpened: Boolean = false
+
     override fun setSelection(position: Int) {
         super.setSelection(position)
         if (position == selectedItemPosition) {
@@ -19,6 +22,32 @@ class HistoryInputSpinner(
 
     override fun setOnItemSelectedListener(listener: OnItemSelectedListener?) {
         this.listener = listener
+    }
+
+    fun setOnDropDownListener(listener: OnDropDownEventsListener) {
+        onDropDownEventsListener = listener
+    }
+
+    interface OnDropDownEventsListener {
+        fun dropDownOpen()
+        fun dropDownClose()
+    }
+
+    override fun performClick(): Boolean {
+        isDropDownOpened = true
+        onDropDownEventsListener?.dropDownOpen()
+        return super.performClick()
+    }
+
+    override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+        if (isDropDownOpened && hasWindowFocus) {
+            performClosedEvent()
+        }
+    }
+
+    private fun performClosedEvent() {
+        isDropDownOpened = false
+        onDropDownEventsListener?.dropDownClose()
     }
 
 }

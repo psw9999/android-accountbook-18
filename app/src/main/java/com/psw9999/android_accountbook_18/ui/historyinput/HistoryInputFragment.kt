@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import com.psw9999.android_accountbook_18.databinding.FragmentHistoryInputBindin
 import com.psw9999.android_accountbook_18.ui.categoryadd.CategoryAddFragment
 import com.psw9999.android_accountbook_18.ui.categoryadd.CategoryAddFragment.Companion.IS_SPEND
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
+import com.psw9999.android_accountbook_18.ui.common.customview.HistoryInputSpinner
 import com.psw9999.android_accountbook_18.ui.historyinput.adapter.InputSpinnerAdapter
 import com.psw9999.android_accountbook_18.ui.main.CategoryViewModel
 import com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel
@@ -174,6 +176,27 @@ class HistoryInputFragment :
                 override fun onNothingSelected(p0: AdapterView<*>?) {
                 }
             }
+
+        binding.spRegisterCategory.setOnDropDownListener(object : HistoryInputSpinner.OnDropDownEventsListener {
+            override fun dropDownOpen() {
+                categoryAdapter.setIsSelected(true)
+            }
+
+            override fun dropDownClose() {
+                categoryAdapter.setIsSelected(false)
+            }
+        })
+
+
+        binding.spRegisterPayment.setOnDropDownListener(object : HistoryInputSpinner.OnDropDownEventsListener {
+            override fun dropDownOpen() {
+                paymentAdapter.setIsSelected(true)
+            }
+
+            override fun dropDownClose() {
+                paymentAdapter.setIsSelected(false)
+            }
+        })
     }
 
 
