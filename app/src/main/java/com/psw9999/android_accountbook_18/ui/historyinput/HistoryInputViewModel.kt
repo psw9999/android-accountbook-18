@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputFragment.Companion.spinnerInitValue
 import com.psw9999.android_accountbook_18.util.DateUtil.currentDate
 import com.psw9999.android_accountbook_18.util.DateUtil.dateFormat
+import com.psw9999.android_accountbook_18.util.DateUtil.dateToHistoryInputDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -17,6 +18,9 @@ class HistoryInputViewModel : ViewModel() {
             currentDate.monthValue,
             currentDate.dayOfMonth))
     val historyDate : StateFlow<String> = _historyDate
+
+    private val _displayHistoryDate = MutableStateFlow(dateToHistoryInputDate(_historyDate.value))
+    val displayHistoryDate : StateFlow<String> = _displayHistoryDate
 
     private val _historyId = MutableStateFlow(-1)
     val historyId : StateFlow<Int> = _historyId
@@ -58,6 +62,7 @@ class HistoryInputViewModel : ViewModel() {
 
     fun setHistoryDate(year: Int, month: Int, dayOfMonth: Int) {
         _historyDate.value = String.format(dateFormat, year, month, dayOfMonth)
+        _displayHistoryDate.value = dateToHistoryInputDate(_historyDate.value)
     }
 
     fun setHistoryDate(time : String) {

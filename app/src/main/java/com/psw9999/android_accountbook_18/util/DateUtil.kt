@@ -13,6 +13,11 @@ object DateUtil {
         return historyHeaderFormat.format(LocalDate.parse(date, DateTimeFormatter.ISO_DATE))
     }
 
+    fun dateToHistoryInputDate(date: String): String {
+        val historyHeaderFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd E요일")
+        return historyHeaderFormat.format(LocalDate.parse(date, DateTimeFormatter.ISO_DATE))
+    }
+
     fun getDayValue(date: String) =
         LocalDate.parse(date, DateTimeFormatter.ISO_DATE).dayOfMonth
 

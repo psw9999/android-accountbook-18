@@ -153,7 +153,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="100dp"
-            android:text="@{viewmodel.historyDate}"
+            android:text="@{viewmodel.displayHistoryDate}"
             android:textColor="@color/purple"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/gl_input_end"
