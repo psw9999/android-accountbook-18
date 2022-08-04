@@ -43,7 +43,7 @@ class HistoryInputFragment :
     private val historyInputViewModel: HistoryInputViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by activityViewModels()
     private val categoryViewModel: CategoryViewModel by activityViewModels()
-    private val historyDataViewModel : HistoryDataViewModel by activityViewModels()
+    private val historyDataViewModel: HistoryDataViewModel by activityViewModels()
 
     private val paymentAdapter by lazy { InputSpinnerAdapter(activityContext) }
     private val categoryAdapter by lazy { InputSpinnerAdapter(activityContext) }
@@ -67,8 +67,13 @@ class HistoryInputFragment :
             setIsSpend(historyItem.isSpend)
             setAmount(historyItem.amount.toString())
             setContent(historyItem.content)
-            if(historyItem.isSpend) historyInputViewModel.setPaymentMethod(Pair(historyItem.paymentId,historyItem.payment!!))
-            setCategory(Pair(historyItem.categoryId,historyItem.category))
+            if (historyItem.isSpend) historyInputViewModel.setPaymentMethod(
+                Pair(
+                    historyItem.paymentId,
+                    historyItem.payment!!
+                )
+            )
+            setCategory(Pair(historyItem.categoryId, historyItem.category))
         }
     }
 
@@ -76,9 +81,9 @@ class HistoryInputFragment :
         val date = historyInputViewModel.historyDate.value.split("-")
         val datePicker = DatePickerDialog(
             activityContext, { _, year, month, dayOfMonth ->
-                historyInputViewModel.setHistoryDate(year, month+1, dayOfMonth)
+                historyInputViewModel.setHistoryDate(year, month + 1, dayOfMonth)
             },
-            date[0].toInt(), date[1].toInt()-1, date[2].toInt()
+            date[0].toInt(), date[1].toInt() - 1, date[2].toInt()
         )
 
         binding.tvDate.setOnClickListener {
@@ -114,15 +119,9 @@ class HistoryInputFragment :
         }
     }
 
-
-    override fun initViews() {
-        binding.viewmodel = historyInputViewModel
-
+    private fun initSpinner() {
         binding.spRegisterPayment.adapter = paymentAdapter
         binding.spRegisterCategory.adapter = categoryAdapter
-
-        initDatePicker()
-        amountConversion()
 
         binding.spRegisterPayment.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -133,12 +132,9 @@ class HistoryInputFragment :
                     id: Long
                 ) {
                     if (position == paymentAdapter.count - 1) {
-                        // TODO : 결제수단 추가하기 프래그먼트로 넘어가기
                         val transaction =
-                            activity?.
-                            supportFragmentManager?.
-                            beginTransaction()?.
-                            add(R.id.l_main_container, PaymentAddFragment())
+                            activity?.supportFragmentManager?.beginTransaction()
+                                ?.add(R.id.l_main_container, PaymentAddFragment())
                         transaction!!.addToBackStack(null)
                         transaction.hide(this@HistoryInputFragment)
                         transaction.commit()
@@ -161,14 +157,12 @@ class HistoryInputFragment :
                 ) {
                     if (position >= categoryAdapter.count - 1) {
                         val transaction =
-                            activity?.
-                            supportFragmentManager?.
-                            beginTransaction()?.
-                            add(R.id.l_main_container, CategoryAddFragment().apply {
-                                arguments = Bundle().apply {
-                                    putBoolean(IS_SPEND, historyInputViewModel.isSpend.value)
-                                }
-                            })
+                            activity?.supportFragmentManager?.beginTransaction()
+                                ?.add(R.id.l_main_container, CategoryAddFragment().apply {
+                                    arguments = Bundle().apply {
+                                        putBoolean(IS_SPEND, historyInputViewModel.isSpend.value)
+                                    }
+                                })
                         transaction!!.addToBackStack(null)
                         transaction.hide(this@HistoryInputFragment)
                         transaction.commit()
@@ -180,69 +174,50 @@ class HistoryInputFragment :
                 override fun onNothingSelected(p0: AdapterView<*>?) {
                 }
             }
+    }
+
+
+    override fun initViews() {
+        binding.viewmodel = historyInputViewModel
+
+        initDatePicker()
+        amountConversion()
+        initSpinner()
 
         binding.tbtngTypeSelector.addOnButtonCheckedListener { group, _, _ ->
             if (group.checkedButtonId == R.id.tbtn_spend) historyInputViewModel.setIsSpend(true)
             else historyInputViewModel.setIsSpend(false)
-            if(!historyInputViewModel.isRevised.value) clearInputField()
+            if (!historyInputViewModel.isRevised.value) clearInputField()
         }
 
         binding.btnRegister.setOnClickListener {
-            historyDataViewModel
-            if(historyInputViewModel.isRevised.value) updateHistory()
-            else saveHistory()
-        }
-    }
-
-    private fun saveHistory() {
-        CoroutineScope(Dispatchers.IO).launch {
-            with(historyInputViewModel) {
-                historyDataViewModel.saveHistory(
-                    time = historyDate.value,
-                    amount = amount.value.toInt(),
-                    content = content.value,
-                    paymentId = if (!isSpend.value) null
-                    else paymentMethod.value.first,
-                    categoryId = if (catergory.value.first == 0) 1
-                    else catergory.value.first
-                )
-            }
-            historyDataViewModel.getMonthHistorys(
-                historyDataViewModel.selectedDate.value.year,
-                historyDataViewModel.selectedDate.value.monthValue
-            )
-            withContext(Dispatchers.Main) {
-                val fragmentManager = activity?.supportFragmentManager!!
-                fragmentManager.beginTransaction().remove(this@HistoryInputFragment).commit()
-                fragmentManager.popBackStack()
-            }
-        }
-    }
-
-    private fun updateHistory() {
-        CoroutineScope(Dispatchers.IO).launch {
-            with(historyInputViewModel) {
-                historyDataViewModel.updateHistory(
-                    HistoryDto(
-                        id = historyId.value,
+            if (historyInputViewModel.isRevised.value) {
+                with(historyInputViewModel) {
+                    historyDataViewModel.updateHistory(
+                        HistoryDto(
+                            id = historyId.value,
+                            time = historyDate.value,
+                            amount = amount.value.toInt(),
+                            content = content.value,
+                            paymentId = if (!isSpend.value) null
+                            else paymentMethod.value.first,
+                            categoryId = if (catergory.value.first == 0) 1 + (isSpend.value.toInt())
+                            else catergory.value.first
+                        )
+                    )
+                }
+            } else {
+                with(historyInputViewModel) {
+                    historyDataViewModel.saveHistory(
                         time = historyDate.value,
                         amount = amount.value.toInt(),
                         content = content.value,
                         paymentId = if (!isSpend.value) null
                         else paymentMethod.value.first,
-                        categoryId = if (catergory.value.first == 0) 1 + (isSpend.value.toInt())
+                        categoryId = if (catergory.value.first == 0) 1
                         else catergory.value.first
                     )
-                )
-            }
-            historyDataViewModel.getMonthHistorys(
-                historyDataViewModel.selectedDate.value.year,
-                historyDataViewModel.selectedDate.value.monthValue
-            )
-            withContext(Dispatchers.Main) {
-                val fragmentManager = activity?.supportFragmentManager!!
-                fragmentManager.beginTransaction().remove(this@HistoryInputFragment).commit()
-                fragmentManager.popBackStack()
+                }
             }
         }
     }
@@ -311,6 +286,17 @@ class HistoryInputFragment :
                 launch {
                     historyInputViewModel.stateCombine.collectLatest {
                         historyInputViewModel.setIsRegisterEnabled(it)
+                    }
+                }
+
+                launch {
+                    historyDataViewModel.isComplete.collectLatest { isComplete ->
+                        if (isComplete) {
+                            historyDataViewModel.setIsComplete(false)
+                            val fragmentManager = activity?.supportFragmentManager!!
+                            fragmentManager.beginTransaction().remove(this@HistoryInputFragment).commit()
+                            fragmentManager.popBackStack()
+                        }
                     }
                 }
             }
