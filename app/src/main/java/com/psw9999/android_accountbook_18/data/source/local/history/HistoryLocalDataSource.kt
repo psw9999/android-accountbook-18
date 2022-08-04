@@ -28,8 +28,8 @@ class HistoryLocalDataSource @Inject constructor(
         content: String,
         paymentId: Int?,
         categoryId: Int
-    ) {
-        withContext(ioDispatcher) {
+    ): Result<Boolean> = withContext(ioDispatcher) {
+        return@withContext try {
             val wd = dataBaseHelper.writableDatabase
             val historyValues = ContentValues().apply {
                 put(HistoryColumns.time.columnName, time)
@@ -39,6 +39,9 @@ class HistoryLocalDataSource @Inject constructor(
                 put(HistoryColumns.payment_id.columnName, paymentId)
             }
             wd.insert(HISTORY_TABLE, null, historyValues)
+            Result.Success(true)
+        } catch(e : Exception) {
+            Result.Error(e)
         }
     }
 
@@ -88,10 +91,8 @@ class HistoryLocalDataSource @Inject constructor(
             }
         }
 
-    override suspend fun updateHistory(
-        historyDto: HistoryDto
-    ) {
-        withContext(ioDispatcher) {
+    override suspend fun updateHistory(historyDto: HistoryDto): Result<Boolean> = withContext(ioDispatcher) {
+        return@withContext try {
             val wd = dataBaseHelper.writableDatabase
             val historyValues = ContentValues().apply {
                 put(HistoryColumns.time.columnName, historyDto.time)
@@ -106,16 +107,22 @@ class HistoryLocalDataSource @Inject constructor(
                 "${HistoryColumns.id.columnName} = ${historyDto.id}",
                 null
             )
+            Result.Success(true)
+        } catch(e : Exception) {
+            Result.Error(e)
         }
     }
 
-    override suspend fun deleteHistories(idList: List<Int>) {
-        withContext(ioDispatcher) {
+    override suspend fun deleteHistories(idList: List<Int>): Result<Boolean> = withContext(ioDispatcher) {
+        return@withContext try {
             val wd = dataBaseHelper.writableDatabase
             idList.forEach { id ->
                 val delete = "DELETE FROM $HISTORY_TABLE WHERE ${HistoryColumns.id.columnName} = $id"
                 wd.execSQL(delete)
             }
+            Result.Success(true)
+        } catch(e : Exception) {
+            Result.Error(e)
         }
     }
 }

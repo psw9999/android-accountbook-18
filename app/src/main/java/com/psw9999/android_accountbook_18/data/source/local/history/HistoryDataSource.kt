@@ -14,12 +14,12 @@ interface HistoryDataSource {
         content : String,
         paymentId : Int?,
         categoryId : Int
-    )
+    ): Result<Boolean>
 
     suspend fun updateHistory(
         historyDto: HistoryDto
-    )
+    ): Result<Boolean>
 
-    suspend fun deleteHistories(idList: List<Int>)
+    suspend fun deleteHistories(idList: List<Int>): Result<Boolean>
 
 }
