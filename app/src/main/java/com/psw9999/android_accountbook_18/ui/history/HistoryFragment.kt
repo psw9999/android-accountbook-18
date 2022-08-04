@@ -1,7 +1,6 @@
 package com.psw9999.android_accountbook_18.ui.history
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -11,6 +10,7 @@ import com.psw9999.android_accountbook_18.R
 import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import com.psw9999.android_accountbook_18.data.model.HistoryListItem
 import com.psw9999.android_accountbook_18.databinding.FragmentHistoryBinding
+import com.psw9999.android_accountbook_18.ui.bottomsheet.DateBottomSheet
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.history.adapter.HistoryListAdapter
 import com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputFragment
@@ -32,11 +32,10 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
     private val historyListAdapter : HistoryListAdapter by lazy {HistoryListAdapter()}
 
     override fun observe() {
-        getHistoryList()
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 combine(
-                    historyDataViewModel.historys,
+                    historyDataViewModel.histories,
                     historyViewModel.isIncomeEnabled,
                     historyViewModel.isSpendEnabled
                 ) { historys, isIncomeEnabled, isSpendEnabled ->
@@ -52,16 +51,18 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
         }
     }
 
+
+
     override fun initViews() {
         binding.historyDataViewModel = historyDataViewModel
         binding.historyViewModel = historyViewModel
         binding.rvHistory.adapter = historyListAdapter
 
-        // TODO : 프래그먼트 매니저 구조 수정 예정
         binding.fbtnHistoryAdd.setOnClickListener {
-            val transaction = activity?.supportFragmentManager?.beginTransaction()?.add(R.id.l_main_container, HistoryInputFragment())
-            transaction!!.addToBackStack(null)
+            val transaction = activity!!.supportFragmentManager.beginTransaction()
+                .add(R.id.l_main_container, HistoryInputFragment(), "History")
             transaction.hide(this)
+            transaction.addToBackStack(null)
             transaction.commit()
         }
 
@@ -118,14 +119,13 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
                 else -> true
             }
         }
+        initBottomSheet()
     }
 
-    private fun getHistoryList() {
-        historyDataViewModel
-        CoroutineScope(Dispatchers.IO).launch {
-            historyDataViewModel.getMonthHistorys(
-                historyDataViewModel.selectedDate.value.year, historyDataViewModel.selectedDate.value.monthValue
-            )
+    private fun initBottomSheet() {
+        binding.abHistoryDate.setOnTitleClickListener {
+            val bottomSheet = DateBottomSheet()
+            bottomSheet.show(childFragmentManager, "dateBottomSheet")
         }
     }
 

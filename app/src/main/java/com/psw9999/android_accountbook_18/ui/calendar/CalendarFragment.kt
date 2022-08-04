@@ -1,6 +1,5 @@
 package com.psw9999.android_accountbook_18.ui.calendar
 
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -9,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.psw9999.android_accountbook_18.R
 import com.psw9999.android_accountbook_18.databinding.FragmentCalendarBinding
+import com.psw9999.android_accountbook_18.ui.bottomsheet.DateBottomSheet
 import com.psw9999.android_accountbook_18.ui.calendar.adapter.CalendarAdapter
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel
@@ -56,5 +56,14 @@ class CalendarFragment : BaseFragment<FragmentCalendarBinding>(R.layout.fragment
         binding.rvCalendar.adapter = calendarAdapter
         binding.rvCalendar.itemAnimator = null
         binding.rvCalendar.setHasFixedSize(true)
+        initBottomSheet()
     }
+
+    private fun initBottomSheet() {
+        binding.abCalendarDate.setOnTitleClickListener {
+            val bottomSheet = DateBottomSheet()
+            bottomSheet.show(childFragmentManager, "dateBottomSheet")
+        }
+    }
+
 }
