@@ -20,8 +20,8 @@ class HistoryDataViewModel @Inject constructor(
     private val repository: HistoryRepository
 ) : ViewModel() {
 
-    private val _historys = MutableStateFlow<List<HistoryItem>>(emptyList())
-    val historys: StateFlow<List<HistoryItem>> = _historys
+    private val _histories = MutableStateFlow<List<HistoryItem>>(emptyList())
+    val histories: StateFlow<List<HistoryItem>> = _histories
 
     private val _selectedDate = MutableStateFlow<LocalDate>(currentDate)
     val selectedDate : StateFlow<LocalDate> = _selectedDate
@@ -32,16 +32,16 @@ class HistoryDataViewModel @Inject constructor(
     private val _spendSum = MutableStateFlow<Int>(0)
     val spendSum : StateFlow<Int> = _spendSum
 
-    suspend fun getMonthHistorys(year: Int, month: Int) {
+    fun getMonthHistorys(year: Int, month: Int) {
         viewModelScope.launch {
             repository.getMonthHistorys(year, month).let { result ->
                 if (result is Result.Success) {
-                    _historys.value = result.data
                     getAmountSum(result.data)
+                    _histories.value = result.data
                 } else {
                     // TODO : DB Read 실패 UI에 보여주기
                     Log.e("error","${result}")
-                    _historys.value = arrayListOf()
+                    _histories.value = arrayListOf()
                 }
             }
         }
@@ -77,8 +77,11 @@ class HistoryDataViewModel @Inject constructor(
         }
     }
 
-    fun setSelectedDate(date: LocalDate) {
-        _selectedDate.value = date
+    fun setSelectedDate(year : Int, month : Int) {
+        _selectedDate.value = LocalDate.of(year, month,1)
+        viewModelScope.launch {
+            getMonthHistorys(_selectedDate.value.year, _selectedDate.value.monthValue)
+        }
     }
 
     fun setPreviousMonth() {

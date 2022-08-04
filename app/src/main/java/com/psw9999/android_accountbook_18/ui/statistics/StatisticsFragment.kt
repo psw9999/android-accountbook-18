@@ -12,13 +12,16 @@ import com.psw9999.android_accountbook_18.R
 import com.psw9999.android_accountbook_18.data.model.HistoryItem
 import com.psw9999.android_accountbook_18.data.model.StatisticsItem
 import com.psw9999.android_accountbook_18.databinding.FragmentStatisticsBinding
+import com.psw9999.android_accountbook_18.ui.bottomsheet.DateBottomSheet
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel
 import com.psw9999.android_accountbook_18.ui.statistics.adapter.StatisticsListAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>(R.layout.fragment_statistics){
 
     private val historyDataViewModel : HistoryDataViewModel by activityViewModels()
@@ -38,6 +41,7 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>(R.layout.frag
         binding.historyDataViewModel = historyDataViewModel
         binding.rvStatisticsCategory.adapter = statisticsListAdapter
         setupPieChart()
+        initBottomSheet()
     }
 
     private fun setupPieChart() {
@@ -97,6 +101,13 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>(R.layout.frag
             }
         }
         statisticsListAdapter.submitList(statisticsList)
+    }
+
+    private fun initBottomSheet() {
+        binding.abStatisticsDate.setOnTitleClickListener {
+            val bottomSheet = DateBottomSheet()
+            bottomSheet.show(childFragmentManager, "dateBottomSheet")
+        }
     }
 
 }
