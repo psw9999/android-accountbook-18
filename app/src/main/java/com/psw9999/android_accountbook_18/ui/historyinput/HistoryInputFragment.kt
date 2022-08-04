@@ -2,6 +2,8 @@ package com.psw9999.android_accountbook_18.ui.historyinput
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,10 +72,7 @@ class HistoryInputFragment :
         }
     }
 
-    override fun initViews() {
-        binding.viewmodel = historyInputViewModel
-        historyDataViewModel
-        // 화면 config 대응
+    private fun initDatePicker() {
         val date = historyInputViewModel.historyDate.value.split("-")
         val datePicker = DatePickerDialog(
             activityContext, { _, year, month, dayOfMonth ->
@@ -85,9 +84,45 @@ class HistoryInputFragment :
         binding.tvDate.setOnClickListener {
             datePicker.show()
         }
+    }
+
+    private fun amountConversion() {
+        binding.edtAmount.addTextChangedListener(
+            object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun afterTextChanged(e: Editable?) {
+                    if (!binding.edtAmount.text.isNullOrEmpty()) {
+                        binding.edtAmount.removeTextChangedListener(this)
+                        val amount = binding.edtAmount.text.toString().replace(",", "")
+                        historyInputViewModel.setAmount(amount)
+
+                        val parsing = getString(R.string.input_amount).format(amount.toInt())
+                        binding.edtAmount.setText(parsing)
+                        binding.edtAmount.setSelection(parsing.length)
+                        binding.edtAmount.addTextChangedListener(this)
+                    }
+                }
+            })
+
+        if (historyInputViewModel.amount.value.isNotEmpty()) {
+            binding.edtAmount.setText(historyInputViewModel.amount.value)
+        }
+    }
+
+
+    override fun initViews() {
+        binding.viewmodel = historyInputViewModel
 
         binding.spRegisterPayment.adapter = paymentAdapter
         binding.spRegisterCategory.adapter = categoryAdapter
+
+        initDatePicker()
+        amountConversion()
 
         binding.spRegisterPayment.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -137,7 +172,6 @@ class HistoryInputFragment :
                         transaction!!.addToBackStack(null)
                         transaction.hide(this@HistoryInputFragment)
                         transaction.commit()
-                        // TODO : 분류 추가하기 프래그먼트로 넘어가기
                     } else {
                         historyInputViewModel.setCategory(categoryAdapter.getItem(position))
                     }

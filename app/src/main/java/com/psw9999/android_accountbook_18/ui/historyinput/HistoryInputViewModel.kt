@@ -82,7 +82,11 @@ class HistoryInputViewModel : ViewModel() {
     }
 
     fun setAmount(amount : String) {
-        _amount.value = amount
+        if (amount.isEmpty()) {
+            _amount.value = "0"
+        } else {
+            _amount.value = amount
+        }
     }
 
     fun setContent(content : String) {
