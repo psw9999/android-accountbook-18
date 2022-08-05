@@ -97,19 +97,26 @@ class CategoryAddFragment :
         return 0
     }
 
+    private fun initAppbar() {
+        with(binding.abAddCategory) {
+            setNavigationOnClickListener {
+                fragmentTerminate()
+            }
+            title =
+                categoryTitleList[(
+                        (categoryAddViewModel.isRevising.value!!.toInt() shl 1) +
+                                categoryAddViewModel.isSpend.value!!.toInt())]
+        }
+    }
+
     override fun initViews() {
         with(binding) {
             initColorAdapter(categoryAddViewModel.befColor)
+            initAppbar()
 
             gvCategoryColor.setOnItemClickListener { _, _, position, _ ->
                 categoryAddViewModel.setSelectedColorIndex(position)
             }
-
-            // 지출, 수정 여부 판단하여 타이틀 결정
-            abAddCategory.title =
-                categoryTitleList[(
-                        (categoryAddViewModel.isRevising.value!!.toInt() shl 1) +
-                                categoryAddViewModel.isSpend.value!!.toInt())]
 
             binding.btnCategoryRegister.setOnClickListener {
                 with(categoryAddViewModel) {
@@ -134,6 +141,12 @@ class CategoryAddFragment :
         }
     }
 
+    private fun fragmentTerminate() {
+        val fragmentManager = activity!!.supportFragmentManager
+        fragmentManager.beginTransaction().remove(this).commit()
+        fragmentManager.popBackStack()
+    }
+
     override fun observe() {
         binding.viewModel = categoryAddViewModel
 
@@ -149,9 +162,7 @@ class CategoryAddFragment :
                     categoryViewModel.isComplete.collectLatest { isComplete ->
                         if (isComplete) {
                             categoryViewModel.setIsComplete(false)
-                            val fragmentManager = activity?.supportFragmentManager!!
-                            fragmentManager.beginTransaction().remove(this@CategoryAddFragment).commit()
-                            fragmentManager.popBackStack()
+                            fragmentTerminate()
                         }
                     }
                 }

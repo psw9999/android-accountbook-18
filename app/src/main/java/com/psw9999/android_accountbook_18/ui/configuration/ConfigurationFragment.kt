@@ -10,6 +10,7 @@ import com.psw9999.android_accountbook_18.ui.categoryadd.CategoryAddFragment
 import com.psw9999.android_accountbook_18.ui.categoryadd.CategoryAddFragment.Companion.CATEGORY_ITEM
 import com.psw9999.android_accountbook_18.ui.common.BaseFragment
 import com.psw9999.android_accountbook_18.ui.main.CategoryViewModel
+import com.psw9999.android_accountbook_18.ui.main.MainBottomMenuType
 import com.psw9999.android_accountbook_18.ui.main.PaymentViewModel
 import com.psw9999.android_accountbook_18.ui.paymentadd.PaymentAddFragment
 import com.psw9999.android_accountbook_18.ui.paymentadd.PaymentAddFragment.Companion.PAYMENT_ITEM
@@ -29,7 +30,7 @@ class ConfigurationFragment :
                 arguments = Bundle().apply {
                     this.putParcelable(PAYMENT_ITEM, paymentDto)
                 }
-            })
+            }, MainBottomMenuType.CONFIGURATION.tag)
         transaction.addToBackStack(null)
         transaction.hide(this)
         transaction.commit()
@@ -42,7 +43,7 @@ class ConfigurationFragment :
                     arguments = Bundle().apply {
                         this.putParcelable(CATEGORY_ITEM, categoryDto)
                     }
-                })
+                }, MainBottomMenuType.CONFIGURATION.tag)
         transaction.addToBackStack(null)
         transaction.hide(this)
         transaction.commit()
@@ -61,7 +62,7 @@ class ConfigurationFragment :
                 arguments = Bundle().apply {
                     putBoolean(CategoryAddFragment.IS_SPEND, isSpend)
                 }
-            })
+            }, MainBottomMenuType.CONFIGURATION.tag)
         transaction.addToBackStack(null)
         transaction.hide(this)
         transaction.commit()
@@ -84,17 +85,4 @@ class ConfigurationFragment :
 
     }
 
-    override fun onStart() {
-        super.onStart()
-        paymentViewModel.getAllPayments()
-        categoryViewModel.getAllCategory()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if(!hidden){
-            paymentViewModel.getAllPayments()
-            categoryViewModel.getAllCategory()
-        }
-    }
 }
