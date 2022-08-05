@@ -51,6 +51,7 @@ class PaymentViewModel @Inject constructor(
         viewModelScope.launch {
             repository.savePayment(title).let { result ->
                 if (result is Result.Success) {
+                    getAllPayments()
                     _isComplete.value = true
                     toast("결제수단을 저장하였습니다.")
                 } else {
@@ -67,6 +68,7 @@ class PaymentViewModel @Inject constructor(
         viewModelScope.launch {
             repository.updatePayment(paymentDto).let { result ->
                 if (result is Result.Success) {
+                    getAllPayments()
                     _isComplete.value = true
                     toast("결제수단을 수정하였습니다.")
                 } else {
