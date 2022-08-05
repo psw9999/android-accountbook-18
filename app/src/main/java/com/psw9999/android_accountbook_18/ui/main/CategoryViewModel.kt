@@ -50,11 +50,11 @@ class CategoryViewModel @Inject constructor(
         viewModelScope.launch {
             repository.saveCategory(isSpend, title, color).let { result ->
                 if (result is Result.Success) {
+                    getAllCategory()
                     _isComplete.value = true
                     toast("카테고리를 저장하였습니다.")
                 } else {
                     toast("카테고리 저장에 실패하였습니다.")
-                    _categorys.value = emptyList()
                 }
                 _isLoading.value = false
             }
@@ -66,11 +66,11 @@ class CategoryViewModel @Inject constructor(
         viewModelScope.launch {
             repository.updateCategory(categoryDto).let { result ->
                 if (result is Result.Success) {
+                    getAllCategory()
                     _isComplete.value = true
                     toast("카테고리를 수정하였습니다.")
                 } else {
                     toast("카테고리 수정에 실패하였습니다.")
-                    _categorys.value = emptyList()
                 }
                 _isLoading.value = false
             }

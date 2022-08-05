@@ -16,6 +16,7 @@ import com.psw9999.android_accountbook_18.ui.history.adapter.HistoryListAdapter
 import com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputFragment
 import com.psw9999.android_accountbook_18.ui.historyinput.HistoryInputFragment.Companion.HISTORY_ITEM
 import com.psw9999.android_accountbook_18.ui.main.HistoryDataViewModel
+import com.psw9999.android_accountbook_18.ui.main.MainBottomMenuType
 import com.psw9999.android_accountbook_18.util.DateUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -31,38 +32,49 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
     private val historyViewModel : HistoryViewModel by viewModels()
     private val historyListAdapter : HistoryListAdapter by lazy {HistoryListAdapter()}
 
-    override fun observe() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                combine(
-                    historyDataViewModel.histories,
-                    historyViewModel.isIncomeEnabled,
-                    historyViewModel.isSpendEnabled
-                ) { historys, isIncomeEnabled, isSpendEnabled ->
-                    historys.filter { historyItem ->
-                        if (historyItem.isSpend) isSpendEnabled
-                        else isIncomeEnabled
-                    }.mapperHistoryListItem()
-                }.collectLatest {
-                    if (it.isEmpty()) historyListAdapter.submitList(listOf(HistoryListItem.HistoryEmpty))
-                    else historyListAdapter.submitList(it)
-                }
-            }
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (historyViewModel.isDeleteMode.value) {
+            historyListAdapter.doUncheck()
+            historyViewModel.clearDeleteList()
+            historyViewModel.setIsDeleteMode(false)
         }
     }
 
-
+    override fun observe() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    combine(
+                        historyDataViewModel.histories,
+                        historyViewModel.isIncomeEnabled,
+                        historyViewModel.isSpendEnabled,
+                        historyDataViewModel.isLoading
+                    ) { histories, isIncomeEnabled, isSpendEnabled, isLoading ->
+                        histories.filter { historyItem ->
+                            if (historyItem.isSpend) isSpendEnabled
+                            else isIncomeEnabled
+                        }.mapperHistoryListItem()
+                    }.collectLatest {
+                        if (historyDataViewModel.isLoading.value) historyListAdapter.submitList(listOf(HistoryListItem.HistoryLoading))
+                        else if (it.isEmpty()) historyListAdapter.submitList(listOf(HistoryListItem.HistoryEmpty))
+                        else historyListAdapter.submitList(it)
+                    }
+            }
+        }
+    }
 
     override fun initViews() {
         binding.historyDataViewModel = historyDataViewModel
         binding.historyViewModel = historyViewModel
         binding.rvHistory.adapter = historyListAdapter
 
+        initDeleteAppbar()
+
         binding.fbtnHistoryAdd.setOnClickListener {
             val transaction = activity!!.supportFragmentManager.beginTransaction()
-                .add(R.id.l_main_container, HistoryInputFragment(), "History")
-            transaction.hide(this)
+                .add(R.id.l_main_container, HistoryInputFragment(), MainBottomMenuType.HISTORY.tag)
             transaction.addToBackStack(null)
+            transaction.hide(this)
             transaction.commit()
         }
 
@@ -81,7 +93,7 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
                         arguments = Bundle().apply {
                             putParcelable(HISTORY_ITEM, historyItem)
                         }
-                    })
+                    }, MainBottomMenuType.HISTORY.tag)
                 transaction!!.addToBackStack(null)
                 transaction.hide(this)
                 transaction.commit()
@@ -102,23 +114,6 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
                 R.id.tbtn_income -> historyViewModel.setIsIncomeEnabled(isChecked)
             }
         }
-
-        binding.abDeleteMode.setOnMenuItemClickListener {
-            when(it.itemId) {
-                R.id.history_appbar_trash -> {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        historyDataViewModel.deleteHistories(historyViewModel.deleteIdList.value)
-                        historyDataViewModel.getMonthHistorys(
-                            historyDataViewModel.selectedDate.value.year,
-                            historyDataViewModel.selectedDate.value.monthValue
-                        )
-                        historyViewModel.setIsDeleteMode(false)
-                    }
-                    true
-                }
-                else -> true
-            }
-        }
         initBottomSheet()
     }
 
@@ -126,6 +121,26 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
         binding.abHistoryDate.setOnTitleClickListener {
             val bottomSheet = DateBottomSheet()
             bottomSheet.show(childFragmentManager, "dateBottomSheet")
+        }
+    }
+
+    private fun initDeleteAppbar() {
+        with(binding.abDeleteMode) {
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.history_appbar_trash -> {
+                        historyDataViewModel.deleteHistories(historyViewModel.deleteIdList.value)
+                        historyViewModel.setIsDeleteMode(false)
+                        true
+                    }
+                    else -> true
+                }
+            }
+            setNavigationOnClickListener {
+                historyListAdapter.doUncheck()
+                historyViewModel.clearDeleteList()
+                historyViewModel.setIsDeleteMode(false)
+            }
         }
     }
 
@@ -151,6 +166,5 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(R.layout.fragment_h
         }
         return result
     }
-
 
 }

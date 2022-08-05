@@ -12,6 +12,7 @@ import com.psw9999.android_accountbook_18.data.model.HistoryListItem
 import com.psw9999.android_accountbook_18.databinding.ItemHistoryContentBinding
 import com.psw9999.android_accountbook_18.databinding.ItemHistoryEmptyBinding
 import com.psw9999.android_accountbook_18.databinding.ItemHistoryHeaderBinding
+import com.psw9999.android_accountbook_18.databinding.ItemHistoryLoadingBinding
 
 class HistoryListAdapter
     : ListAdapter<HistoryListItem, RecyclerView.ViewHolder>(diffUtil) {
@@ -22,19 +23,19 @@ class HistoryListAdapter
                 oldItem: HistoryListItem,
                 newItem: HistoryListItem
             ): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: HistoryListItem,
-                newItem: HistoryListItem
-            ): Boolean {
                 return if (oldItem is HistoryListItem.HistoryHeader && newItem is HistoryListItem.HistoryHeader) {
                     ((oldItem.date == newItem.date) && (oldItem.spend == newItem.spend) && (oldItem.income == newItem.income))
                 } else if (oldItem is HistoryListItem.HistoryContent && newItem is HistoryListItem.HistoryContent) {
                     (oldItem.history == newItem.history)
                 } else
                     false
+            }
+
+            override fun areContentsTheSame(
+                oldItem: HistoryListItem,
+                newItem: HistoryListItem
+            ): Boolean {
+                return oldItem == newItem
             }
         }
     }
@@ -48,6 +49,15 @@ class HistoryListAdapter
 
     fun setOnHistoryLongClickListener(listener: (HistoryItem) -> Unit) {
         this.onHistoryLongClickListener = listener
+    }
+
+    fun doUncheck() {
+        this.currentList.forEach {
+            if (it is HistoryListItem.HistoryContent) {
+                it.history.isSelected = false
+            }
+        }
+        notifyDataSetChanged()
     }
 
     class HistoryHeaderViewHolder(private val binding: ItemHistoryHeaderBinding) :
@@ -65,7 +75,6 @@ class HistoryListAdapter
         RecyclerView.ViewHolder(binding.root) {
         fun binding(historyContent: HistoryListItem.HistoryContent) {
             binding.historyContent = historyContent.history
-
             binding.root.setOnClickListener {
                 onClicklistener?.invoke(historyContent.history)
                 notifyItemChanged(adapterPosition)
@@ -82,11 +91,15 @@ class HistoryListAdapter
     class HistoryEmptyViewHolder(private val binding : ItemHistoryEmptyBinding) :
         RecyclerView.ViewHolder(binding.root)
 
+    class HistoryLoadingViewHolder(private val binding : ItemHistoryLoadingBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is HistoryListItem.HistoryHeader -> R.layout.item_history_header
             is HistoryListItem.HistoryContent -> R.layout.item_history_content
             is HistoryListItem.HistoryEmpty -> R.layout.item_history_empty
+            is HistoryListItem.HistoryLoading -> R.layout.item_history_loading
             else -> throw UnsupportedOperationException("Unknown view")
         }
     }
@@ -114,6 +127,13 @@ class HistoryListAdapter
                     false
                 )
             )
+            R.layout.item_history_loading -> HistoryLoadingViewHolder(
+                ItemHistoryLoadingBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
             else -> throw UnsupportedOperationException("Unknown view")
         }
     }
@@ -128,6 +148,7 @@ class HistoryListAdapter
                     historyListItem
                 )
                 is HistoryListItem.HistoryEmpty -> (holder as HistoryEmptyViewHolder)
+                is HistoryListItem.HistoryLoading -> (holder as HistoryLoadingViewHolder)
             }
         }
     }

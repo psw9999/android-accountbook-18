@@ -50,13 +50,18 @@ class InputSpinnerAdapter(
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View {
         val binding =
             ItemInputSpinnerHeadBinding.inflate(LayoutInflater.from(context), viewGroup, false)
-        if (selectedValue.second.isEmpty()) binding.tvSpinnerHead.text = context.getString(R.string.input_sp_hint)
-        else binding.tvSpinnerHead.text = selectedValue.second
+        if (selectedValue.second.isEmpty()) {
+            binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.lightPurple))
+            binding.tvSpinnerHead.text = context.getString(R.string.input_sp_hint)
+        }
+        else {
+            binding.tvSpinnerHead.text = selectedValue.second
+            binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.purple))
+        }
         if (isSpinnerSelected) {
             binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.purple))
             binding.ivSpinnerHead.scaleY = -1F
         } else {
-            binding.tvSpinnerHead.setTextColor(ContextCompat.getColor(context, R.color.lightPurple))
             binding.ivSpinnerHead.scaleY = 1F
         }
 

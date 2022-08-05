@@ -1,5 +1,6 @@
 package com.psw9999.android_accountbook_18.ui.statistics
 
+import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -62,8 +63,17 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>(R.layout.frag
                 categorySum[pair] = categorySum.getOrDefault(pair, 0) + history.amount
             }
         }
-        setPieChartData(categorySum)
-        setRecyclerViewData(categorySum)
+        if(categorySum.isEmpty()) {
+            binding.tvStatisticNoData.visibility = View.VISIBLE
+            binding.statisticsPiechart.visibility = View.INVISIBLE
+            binding.rvStatisticsCategory.visibility = View.INVISIBLE
+        } else {
+            binding.tvStatisticNoData.visibility = View.INVISIBLE
+            binding.statisticsPiechart.visibility = View.VISIBLE
+            binding.rvStatisticsCategory.visibility = View.VISIBLE
+            setPieChartData(categorySum)
+            setRecyclerViewData(categorySum)
+        }
     }
 
     private fun setPieChartData(categorySum : MutableMap<Pair<String, Int>, Int>) {
@@ -87,7 +97,7 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>(R.layout.frag
     }
 
     private fun setRecyclerViewData(categorySum : MutableMap<Pair<String, Int>, Int>) {
-        val categoryList = categorySum.toList().sortedBy { it.second }
+        val categoryList = categorySum.toList().sortedBy { it.second }.reversed()
         val statisticsList = arrayListOf<StatisticsItem>().apply {
             categoryList.forEach {
                 this.add(

@@ -48,6 +48,18 @@ class PaymentAddFragment
         }
     }
 
+    private fun initAppbar() {
+        binding.abAddPayment.setNavigationOnClickListener {
+            fragmentTerminate()
+        }
+    }
+
+    private fun fragmentTerminate() {
+        val fragmentManager = activity!!.supportFragmentManager
+        fragmentManager.beginTransaction().remove(this).commit()
+        fragmentManager.popBackStack()
+    }
+
     override fun observe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -61,9 +73,7 @@ class PaymentAddFragment
                     paymentViewModel.isComplete.collectLatest { isComplete ->
                         if (isComplete) {
                             paymentViewModel.setIsComplete(false)
-                            val fragmentManager = activity?.supportFragmentManager!!
-                            fragmentManager.beginTransaction().remove(this@PaymentAddFragment).commit()
-                            fragmentManager.popBackStack()
+                            fragmentTerminate()
                         }
                     }
                 }
@@ -73,7 +83,7 @@ class PaymentAddFragment
 
     override fun initViews() {
         binding.viewModel = paymentAddViewModel
-
+        initAppbar()
         binding.btnPaymentRegister.setOnClickListener {
             with(paymentAddViewModel) {
                 if (isRevising.value!!) {

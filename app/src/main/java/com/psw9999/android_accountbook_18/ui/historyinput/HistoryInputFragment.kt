@@ -66,6 +66,7 @@ class HistoryInputFragment :
             setIsRevised(true)
             setHistoryId(historyItem.id)
             setHistoryDate(historyItem.time)
+            displayHistoryDate(historyItem.time)
             setIsSpend(historyItem.isSpend)
             setAmount(historyItem.amount.toString())
             setContent(historyItem.content)
@@ -199,6 +200,11 @@ class HistoryInputFragment :
         })
     }
 
+    private fun initAppbar() {
+        binding.abHistoryInput.setNavigationOnClickListener {
+            fragmentTerminate()
+        }
+    }
 
     override fun initViews() {
         binding.viewmodel = historyInputViewModel
@@ -206,6 +212,7 @@ class HistoryInputFragment :
         initDatePicker()
         amountConversion()
         initSpinner()
+        initAppbar()
 
         binding.tbtngTypeSelector.addOnButtonCheckedListener { group, _, _ ->
             if (group.checkedButtonId == R.id.tbtn_spend) historyInputViewModel.setIsSpend(true)
@@ -253,7 +260,7 @@ class HistoryInputFragment :
                 currentDate.monthValue,
                 currentDate.dayOfMonth
             )
-
+            historyInputViewModel.setHistoryDate(currentDate.toString())
             historyInputViewModel.setPaymentMethod(spinnerInitValue)
             historyInputViewModel.setCategory(spinnerInitValue)
 
@@ -272,6 +279,12 @@ class HistoryInputFragment :
             }
         }
         return categorys
+    }
+
+    private fun fragmentTerminate() {
+        val fragmentManager = activity!!.supportFragmentManager
+        fragmentManager.beginTransaction().remove(this@HistoryInputFragment).commit()
+        fragmentManager.popBackStack()
     }
 
     override fun observe() {
@@ -316,9 +329,7 @@ class HistoryInputFragment :
                     historyDataViewModel.isComplete.collectLatest { isComplete ->
                         if (isComplete) {
                             historyDataViewModel.setIsComplete(false)
-                            val fragmentManager = activity?.supportFragmentManager!!
-                            fragmentManager.beginTransaction().remove(this@HistoryInputFragment).commit()
-                            fragmentManager.popBackStack()
+                            fragmentTerminate()
                         }
                     }
                 }

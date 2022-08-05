@@ -54,7 +54,7 @@ class HistoryLocalDataSource @Inject constructor(
                         "${PaymentColumns.method.columnName}, ${CategoryColumns.is_spend.columnName}, ${CategoryColumns.title.columnName}, " +
                         "${CategoryColumns.color.columnName} " +
                         "FROM $HISTORY_TABLE " +
-                        "LEFT JOIN $CATEGORY_TABLE ON $HISTORY_TABLE.category_id = $CATEGORY_TABLE.id " +
+                        "INNER JOIN $CATEGORY_TABLE ON $HISTORY_TABLE.category_id = $CATEGORY_TABLE.id " +
                         "LEFT JOIN $PAYMENT_TABLE ON $HISTORY_TABLE.payment_id = $PAYMENT_TABLE.id " +
                         "WHERE ${HistoryColumns.time.columnName} BETWEEN \"${String.format(dateFormat,year,month,1)}\" "+
                         "AND \"${String.format(dateFormat, year, month, 31)}\" " +

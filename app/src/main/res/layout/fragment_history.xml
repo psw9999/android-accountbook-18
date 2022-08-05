@@ -41,6 +41,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/ic_property_1_back"/>
 
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/purple"
+            android:visibility="@{historyViewModel.isDeleteMode ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@id/ab_delete_mode" />
+
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/tbtng_type_selector"
             android:layout_width="0dp"
@@ -61,6 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:enabled="@{historyViewModel.isDeleteMode ? false : true}"
+                android:alpha="@{historyViewModel.isDeleteMode ? 0.5f : 1.0f}"
                 android:text="@{`수입 ` + @string/history_amount_sum(historyDataViewModel.incomeSum)}"
                 android:textColor="@color/white"
                 android:textSize="12sp"
@@ -73,6 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:enabled="@{historyViewModel.isDeleteMode ? false : true}"
+                android:alpha="@{historyViewModel.isDeleteMode ? 0.5f : 1.0f}"
                 android:text="@{`지출 ` + @string/history_amount_sum(historyDataViewModel.spendSum)}"
                 android:textColor="@color/white"
                 android:textSize="12sp"
