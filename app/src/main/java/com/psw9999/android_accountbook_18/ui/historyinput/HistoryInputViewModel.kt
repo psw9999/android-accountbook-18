@@ -56,6 +56,10 @@ class HistoryInputViewModel : ViewModel() {
             historyDate.isNotEmpty() && amount.isNotEmpty() && ((!isSpend) || paymentMethod.second.isNotEmpty())
         }
 
+    fun displayHistoryDate(date : String) {
+        _displayHistoryDate.value = dateToHistoryInputDate(date)
+    }
+
     fun setHistoryId(id : Int) {
         _historyId.value = id
     }
