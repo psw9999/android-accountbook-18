@@ -10,4 +10,5 @@ sealed class HistoryListItem {
     ) : HistoryListItem()
 
     object HistoryEmpty : HistoryListItem()
+    object HistoryLoading : HistoryListItem()
 }

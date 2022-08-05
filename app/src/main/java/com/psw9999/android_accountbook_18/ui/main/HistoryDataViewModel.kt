@@ -20,7 +20,7 @@ class HistoryDataViewModel @Inject constructor(
     private val repository: HistoryRepository
 ) : ViewModel() {
 
-    private val _histories = MutableStateFlow<List<HistoryItem>>(emptyList())
+    private val _histories = MutableStateFlow<List<HistoryItem>>(listOf())
     val histories: StateFlow<List<HistoryItem>> = _histories
 
     private val _selectedDate = MutableStateFlow<LocalDate>(currentDate)
@@ -32,7 +32,7 @@ class HistoryDataViewModel @Inject constructor(
     private val _spendSum = MutableStateFlow<Int>(0)
     val spendSum : StateFlow<Int> = _spendSum
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(true)
     val isLoading : StateFlow<Boolean> = _isLoading
 
     private val _isComplete = MutableStateFlow(false)
@@ -42,10 +42,15 @@ class HistoryDataViewModel @Inject constructor(
         _isComplete.value = isComplete
     }
 
+    fun setIsLoading(isLoading : Boolean) {
+        _isLoading.value = isLoading
+    }
+
     fun getMonthHistories(year: Int, month: Int) {
         _isLoading.value = true
         viewModelScope.launch {
             repository.getMonthHistorys(year, month).let { result ->
+                _isLoading.value = false
                 if (result is Result.Success) {
                     getAmountSum(result.data)
                     _histories.value = result.data
@@ -53,7 +58,6 @@ class HistoryDataViewModel @Inject constructor(
                     toast("내역 로드에 실패하였습니다.")
                     _histories.value = arrayListOf()
                 }
-                _isLoading.value = false
             }
         }
     }
@@ -74,6 +78,7 @@ class HistoryDataViewModel @Inject constructor(
                 categoryId = categoryId
             ).let { result ->
                 if (result is Result.Success) {
+                    getMonthHistories(selectedDate.value.year,selectedDate.value.monthValue)
                     _isComplete.value = true
                     toast("내역을 저장하였습니다.")
                 } else {
@@ -87,6 +92,7 @@ class HistoryDataViewModel @Inject constructor(
         viewModelScope.launch {
             repository.updateHistory(historyDto).let { result ->
                 if (result is Result.Success) {
+                    getMonthHistories(selectedDate.value.year,selectedDate.value.monthValue)
                     _isComplete.value = true
                     toast("내역을 업데이트하였습니다.")
                 } else {
@@ -100,6 +106,7 @@ class HistoryDataViewModel @Inject constructor(
         viewModelScope.launch {
             repository.deleteHistories(idList).let { result ->
                 if (result is Result.Success) {
+                    getMonthHistories(selectedDate.value.year,selectedDate.value.monthValue)
                     _isComplete.value = true
                     toast("내역을 삭제하였습니다.")
                 } else {
