@@ -106,14 +106,14 @@
             tools:text="900,000" />
 
         <ProgressBar
-            android:id="@+id/rv_calendar_loading"
+            android:id="@+id/pb_rv_loading"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/rv_calendar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/rv_calendar" />
+            app:layout_constraintTop_toBottomOf="@id/ab_calendar_date" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
