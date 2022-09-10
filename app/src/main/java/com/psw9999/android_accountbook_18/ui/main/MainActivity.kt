@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        historyDataViewModel.getMonthHistorys(
+        historyDataViewModel.getMonthHistories(
             historyDataViewModel.selectedDate.value.year,
             historyDataViewModel.selectedDate.value.monthValue)
         paymentViewModel.getAllPayments()
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 paymentViewModel.payments.combine(categoryViewModel.category) { payments, category ->
                 }.collectLatest {
-                    historyDataViewModel.getMonthHistorys(
+                    historyDataViewModel.getMonthHistories(
                         historyDataViewModel.selectedDate.value.year,
                         historyDataViewModel.selectedDate.value.monthValue)
                 }
